@@ -93,6 +93,8 @@ html_content = """<!DOCTYPE html>
             border-radius: 16px;
             padding: 2rem 1.5rem;
             text-align: center;
+            text-decoration: none;
+            color: var(--text-primary);
             transition: all 0.3s ease;
         }
         .card:hover {
@@ -101,41 +103,8 @@ html_content = """<!DOCTYPE html>
             box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
         }
         .card h2 {
-            margin: 0 0 1.5rem 0;
+            margin: 0;
             font-size: 1.25rem;
-        }
-        .card-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            width: 100%;
-        }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-        .btn-secondary:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-color: var(--text-secondary);
-        }
-        .btn-obtainium {
-            background-color: var(--accent);
-            color: #fff;
-            border: 1px solid var(--accent);
-        }
-        .btn-obtainium:hover {
-            background-color: var(--accent-hover);
         }
     </style>
 </head>
@@ -146,17 +115,9 @@ html_content = """<!DOCTYPE html>
 """
 
 for app in active_apps:
-    page_url = f"{base_url}/{app['slug']}.html"
-    encoded_url = urllib.parse.quote(page_url, safe='')
-    obtainium_link = f"obtainium://add/{encoded_url}"
-    
-    html_content += f"""            <div class="card">
+    html_content += f"""            <a href="{app['slug']}.html" class="card">
                 <h2>{app['name']}</h2>
-                <div class="card-actions">
-                    <a href="{app['slug']}.html" class="btn btn-secondary">Détails & APK</a>
-                    <a href="{obtainium_link}" class="btn btn-obtainium">Add to Obtainium</a>
-                </div>
-            </div>\n"""
+            </a>\n"""
 
 html_content += """        </div>
     </div>

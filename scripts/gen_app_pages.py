@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import os
 import glob
-
+import re
+import json
 import urllib.parse
 
 # This script runs AFTER releases are built and uploaded.
@@ -53,12 +54,38 @@ for apk_path in apks:
         slug = parts[0] if parts else "unknown"
 
     download_url = f"https://github.com/{repo_full}/releases/download/{next_ver_code}/{filename}"
-    
     page_url = f"{base_url}/{slug}.html"
-    encoded_url = urllib.parse.quote(page_url, safe='')
-    obtainium_link = f"obtainium://add/{encoded_url}"
+    
+    # Extract info for display
+    m = re.search(r"^(.*?)-v([0-9a-zA-Z.-]+)-((?:arm64-v8a|arm-v7a|x86_64|x86|all))\.apk$", filename)
+    if m:
+        brand_part = m.group(1)
+        brand = brand_part[len(slug)+1:] if brand_part.startswith(slug+"-") else brand_part
+        if not brand:
+            brand = "Original"
+        version = m.group(2)
+        arch = m.group(3)
+    else:
+        brand, version, arch = "Unknown", "Unknown", "Unknown"
 
-    # User requested a clean UI with a back link, while keeping it simple for Obtainium.
+    # Craft the Obtainium JSON payload
+    additional_settings = {
+        "versionExtractionRegEx": r"-v([0-9a-zA-Z.-]+)-(?:arm64-v8a|arm-v7a|x86_64|x86|all)\.apk",
+        "matchGroupToUse": "$1",
+        "defaultPseudoVersioningMethod": "APKLinkHash"
+    }
+    
+    app_json = {
+        "id": slug,
+        "url": page_url,
+        "author": owner,
+        "name": slug.replace('-', ' ').title(),
+        "additionalSettings": json.dumps(additional_settings)
+    }
+    json_str = json.dumps(app_json)
+    encoded_json = urllib.parse.quote(json_str, safe='')
+    obtainium_link = f"obtainium://app/{encoded_json}"
+
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,15 +140,48 @@ for apk_path in apks:
             color: var(--text-primary);
         }}
         h1 {{
-            margin: 0 0 1rem 0;
-            font-size: 2rem;
+            margin: 0 0 1.5rem 0;
+            font-size: 2.2rem;
             text-transform: capitalize;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }}
-        .version {{
-            color: var(--text-secondary);
+        .info-grid {{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
             margin-bottom: 2.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }}
+        .info-item {{
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }}
+        .info-label {{
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+        }}
+        .info-value {{
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }}
+        .filename-raw {{
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
             word-break: break-all;
-            font-size: 0.9rem;
+            background: rgba(0,0,0,0.2);
+            padding: 0.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
         }}
         .actions {{
             display: flex;
@@ -157,14 +217,17 @@ for apk_path in apks:
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
         }}
-        .btn-obtainium {{
-            background-color: transparent;
-            color: var(--obtainium-color);
-            border: 2px solid var(--obtainium-color);
+        .badge-obtainium {{
+            display: inline-block;
+            transition: transform 0.2s ease;
         }}
-        .btn-obtainium:hover {{
-            background-color: rgba(16, 185, 129, 0.1);
-            transform: translateY(-2px);
+        .badge-obtainium:hover {{
+            transform: translateY(-2px) scale(1.02);
+        }}
+        .badge-obtainium img {{
+            height: 52px;
+            width: auto;
+            border-radius: 8px;
         }}
     </style>
 </head>
@@ -172,10 +235,31 @@ for apk_path in apks:
     <div class="container">
         <a href="index.html" class="back-link">← Back to Apps List</a>
         <h1>{slug.replace('-', ' ')}</h1>
-        <p class="version">{filename}</p>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Version</span>
+                <span class="info-value">v{version}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Brand</span>
+                <span class="info-value" style="text-transform: capitalize;">{brand}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Architecture</span>
+                <span class="info-value">{arch}</span>
+            </div>
+        </div>
+        
+        <div class="filename-raw">
+            File: <code>{filename}</code>
+        </div>
+        
         <div class="actions">
             <a href="{download_url}" class="btn btn-download">Download APK</a>
-            <a href="{obtainium_link}" class="btn btn-obtainium">Add to Obtainium</a>
+            <a href="{obtainium_link}" class="badge-obtainium">
+                <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium">
+            </a>
         </div>
     </div>
 </body>
