@@ -88,16 +88,21 @@ uptodown-dlurl = "https://twitch.en.uptodown.com/android"
 enabled = true
 apkmirror-dlurl = "https://www.apkmirror.com/apk/facebook-2/facebook/"
 uptodown-dlurl = "https://facebook.en.uptodown.com/android"
-#patches-source = "RookieEnough/De-ReVanced"
-#cli-source = "MorpheApp/morphe-cli"
-#rv-brand = "DeReVanced"
+arch = "arm64-v8a"
+patches-source = "RookieEnough/De-ReVanced"
+cli-source = "MorpheApp/morphe-cli"
+rv-brand = "DeReVanced"
 build-mode = "apk"
+excluded-patches = "'Hide \\'Sponsored Stories\\''" # Broken
+version = "latest"
 
 [Messenger]
 enabled = true
 apkmirror-dlurl = "https://www.apkmirror.com/apk/facebook-2/messenger/"
 uptodown-dlurl = "https://facebook-messenger.en.uptodown.com/android"
-#patches-source = "RookieEnough/De-ReVanced"
-#cli-source = "MorpheApp/morphe-cli"
-#rv-brand = "DeReVanced"
+arch = "arm64-v8a"
+patches-source = "RookieEnough/De-ReVanced"
+cli-source = "MorpheApp/morphe-cli"
+rv-brand = "DeReVanced"
 build-mode = "apk"
+excluded-patches = "'Hide inbox ads'" # Broken
