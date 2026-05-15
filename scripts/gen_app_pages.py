@@ -2,12 +2,21 @@
 import os
 import glob
 
+import urllib.parse
+
 # This script runs AFTER releases are built and uploaded.
 # The NEXT_VER_CODE environment variable contains the release tag.
 # GITHUB_REPOSITORY contains the repo path (e.g. j-hc/revanced-magisk-module).
 
 next_ver_code = os.environ.get("NEXT_VER_CODE", "UNKNOWN_TAG")
-repo = os.environ.get("GITHUB_REPOSITORY", "unknown/repo")
+repo_full = os.environ.get("GITHUB_REPOSITORY", "TheToto/revanced-magisk-module")
+
+try:
+    owner, repo_name = repo_full.split('/')
+except ValueError:
+    owner, repo_name = "TheToto", "revanced-magisk-module"
+
+base_url = f"https://{owner}.github.io/{repo_name}"
 
 out_dir = "/tmp/pages"
 os.makedirs(out_dir, exist_ok=True)
@@ -23,11 +32,6 @@ for apk_path in apks:
     filename = os.path.basename(apk_path)
     
     # Filename format: <slug>-<brand>-v<version>-<arch>.apk
-    # We extract the slug (the part before the first dash that is followed by the brand).
-    # Since brand is often 'revanced', 'piko', 'derevanced', 'morphe', etc.
-    # Actually, a simpler way is to just find the slug by matching with config.toml table names.
-    # Let's extract the slug directly: it's the first part. Wait, if app name has a dash, like "App-Name", slug is "app-name".
-    # Let's read config.toml to get valid slugs.
     valid_slugs = []
     try:
         with open("config.toml", "r") as f:
@@ -39,18 +43,20 @@ for apk_path in apks:
         pass
 
     slug = "unknown"
-    # Find the longest matching valid slug
     for valid_slug in sorted(valid_slugs, key=len, reverse=True):
         if filename.startswith(valid_slug + "-"):
             slug = valid_slug
             break
             
     if slug == "unknown":
-        # Fallback if config.toml reading failed or slug didn't match
         parts = filename.split('-')
         slug = parts[0] if parts else "unknown"
 
-    download_url = f"https://github.com/{repo}/releases/download/{next_ver_code}/{filename}"
+    download_url = f"https://github.com/{repo_full}/releases/download/{next_ver_code}/{filename}"
+    
+    page_url = f"{base_url}/{slug}.html"
+    encoded_url = urllib.parse.quote(page_url, safe='')
+    obtainium_link = f"obtainium://add/{encoded_url}"
 
     # User requested a clean UI with a back link, while keeping it simple for Obtainium.
     html_content = f"""<!DOCTYPE html>
@@ -68,6 +74,8 @@ for apk_path in apks:
             --accent: #3b82f6;
             --accent-hover: #2563eb;
             --border: #334155;
+            --obtainium-color: #10b981;
+            --obtainium-hover: #059669;
         }}
         * {{ box-sizing: border-box; }}
         body {{
@@ -115,22 +123,48 @@ for apk_path in apks:
             word-break: break-all;
             font-size: 0.9rem;
         }}
+        .actions {{
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }}
+        @media (min-width: 480px) {{
+            .actions {{
+                flex-direction: row;
+                justify-content: center;
+            }}
+        }}
         .btn {{
             display: inline-block;
-            background-color: var(--accent);
-            color: #fff;
-            padding: 1rem 2rem;
+            padding: 1rem 1.5rem;
             border-radius: 12px;
             text-decoration: none;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
+            width: 100%;
         }}
-        .btn:hover {{
+        @media (min-width: 480px) {{
+            .btn {{ width: auto; }}
+        }}
+        .btn-download {{
+            background-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+        }}
+        .btn-download:hover {{
             background-color: var(--accent-hover);
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.5);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+        }}
+        .btn-obtainium {{
+            background-color: transparent;
+            color: var(--obtainium-color);
+            border: 2px solid var(--obtainium-color);
+        }}
+        .btn-obtainium:hover {{
+            background-color: rgba(16, 185, 129, 0.1);
+            transform: translateY(-2px);
         }}
     </style>
 </head>
@@ -139,7 +173,10 @@ for apk_path in apks:
         <a href="index.html" class="back-link">← Back to Apps List</a>
         <h1>{slug.replace('-', ' ')}</h1>
         <p class="version">{filename}</p>
-        <a href="{download_url}" class="btn">Download APK</a>
+        <div class="actions">
+            <a href="{download_url}" class="btn btn-download">Download APK</a>
+            <a href="{obtainium_link}" class="btn btn-obtainium">Add to Obtainium</a>
+        </div>
     </div>
 </body>
 </html>

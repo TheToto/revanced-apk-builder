@@ -2,9 +2,20 @@
 import tomllib
 import os
 
+import urllib.parse
+
 # Read config file to find active apps
 config_file = "config.toml"
 active_apps = []
+
+# Get repository details for Obtainium links
+repo_full = os.environ.get("GITHUB_REPOSITORY", "TheToto/revanced-magisk-module")
+try:
+    owner, repo_name = repo_full.split('/')
+except ValueError:
+    owner, repo_name = "TheToto", "revanced-magisk-module"
+
+base_url = f"https://{owner}.github.io/{repo_name}"
 
 try:
     with open(config_file, "rb") as f:
@@ -33,7 +44,7 @@ html_content = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReVanced Repository</title>
+    <title>TheToto Modded APKs Repository</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -72,7 +83,7 @@ html_content = """<!DOCTYPE html>
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 1.5rem;
         }
-        .app-link {
+        .card {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -81,41 +92,71 @@ html_content = """<!DOCTYPE html>
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 2rem 1.5rem;
-            text-decoration: none;
-            color: var(--text-primary);
+            text-align: center;
             transition: all 0.3s ease;
         }
-        .app-link:hover {
+        .card:hover {
             transform: translateY(-5px);
             border-color: var(--accent);
             box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
         }
-        .app-link h2 {
-            margin: 0 0 0.5rem 0;
+        .card h2 {
+            margin: 0 0 1.5rem 0;
             font-size: 1.25rem;
         }
-        .tag {
-            font-size: 0.75rem;
-            background-color: rgba(59, 130, 246, 0.2);
-            color: #93c5fd;
-            padding: 0.25rem 0.75rem;
-            border-radius: 999px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .card-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: 100%;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-secondary);
+        }
+        .btn-obtainium {
+            background-color: var(--accent);
+            color: #fff;
+            border: 1px solid var(--accent);
+        }
+        .btn-obtainium:hover {
+            background-color: var(--accent-hover);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>ReVanced Repository</h1>
+        <h1>TheToto Modded APKs Repository</h1>
         <div class="grid">
 """
 
 for app in active_apps:
-    html_content += f"""            <a href="{app['slug']}.html" class="app-link">
+    page_url = f"{base_url}/{app['slug']}.html"
+    encoded_url = urllib.parse.quote(page_url, safe='')
+    obtainium_link = f"obtainium://add/{encoded_url}"
+    
+    html_content += f"""            <div class="card">
                 <h2>{app['name']}</h2>
-                <span class="tag">Active</span>
-            </a>\n"""
+                <div class="card-actions">
+                    <a href="{app['slug']}.html" class="btn btn-secondary">Détails & APK</a>
+                    <a href="{obtainium_link}" class="btn btn-obtainium">Add to Obtainium</a>
+                </div>
+            </div>\n"""
 
 html_content += """        </div>
     </div>
