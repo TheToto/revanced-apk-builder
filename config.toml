@@ -47,7 +47,7 @@ archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.a
 excluded-patches = "'Custom branding'"
 
 [Reddit-Morphe]
-enabled = false
+enabled = true
 app-name = "Reddit"
 rv-brand = "Morphe"
 build-mode = "both"
@@ -92,7 +92,6 @@ uptodown-dlurl = "https://facebook.en.uptodown.com/android"
 #cli-source = "MorpheApp/morphe-cli"
 #rv-brand = "DeReVanced"
 build-mode = "apk"
-arch = "arm64-v8a"
 
 [Messenger]
 enabled = true
@@ -102,4 +101,3 @@ uptodown-dlurl = "https://facebook-messenger.en.uptodown.com/android"
 #cli-source = "MorpheApp/morphe-cli"
 #rv-brand = "DeReVanced"
 build-mode = "apk"
-arch = "arm64-v8a"
