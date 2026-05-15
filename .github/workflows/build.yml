@@ -85,7 +85,8 @@ jobs:
       - name: Update modules changelog and update json
         id: update_config
         run: |
-          git checkout -f update || git switch --discard-changes --orphan update
+          git fetch origin update || true
+          git checkout -B update origin/update || git switch --discard-changes --orphan update
           cp -f build.tmp build.md
           get_update_json() {
             echo "{
