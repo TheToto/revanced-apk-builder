@@ -745,6 +745,7 @@ build_rv() {
 				mv -f "$patched_apk" "$apk_output"
 			fi
 			pr "Built ${table} (non-root): '${apk_output}'"
+			echo "$(basename "$apk_output"):$pkg_name" >> "${BUILD_DIR}/app_packages.txt"
 			continue
 		fi
 		local base_template

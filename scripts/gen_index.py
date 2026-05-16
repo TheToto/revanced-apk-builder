@@ -15,7 +15,7 @@ try:
 except ValueError:
     owner, repo_name = "TheToto", "revanced-magisk-module"
 
-base_url = f"https://{owner}.github.io/{repo_name}"
+base_url = "https://apk.thetoto.fr"
 
 try:
     with open(config_file, "rb") as f:

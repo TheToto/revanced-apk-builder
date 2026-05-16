@@ -17,7 +17,7 @@ try:
 except ValueError:
     owner, repo_name = "TheToto", "revanced-magisk-module"
 
-base_url = f"https://{owner}.github.io/{repo_name}"
+base_url = "https://apk.thetoto.fr"
 
 out_dir = "/tmp/pages"
 os.makedirs(out_dir, exist_ok=True)
@@ -29,10 +29,20 @@ if not apks:
     print("No APKs found in build directory. Skipping app page generation.")
     exit(0)
 
+# Load package name manifest from the build process
+pkg_map = {}
+manifest_path = os.path.join(build_dir, "app_packages.txt")
+if os.path.isfile(manifest_path):
+    with open(manifest_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if ":" in line:
+                apk_name, pkg_name = line.split(":", 1)
+                pkg_map[apk_name] = pkg_name
+
 for apk_path in apks:
     filename = os.path.basename(apk_path)
     
-    # Filename format: <slug>-<brand>-v<version>-<arch>.apk
     valid_slugs = []
     try:
         with open("config.toml", "r") as f:
@@ -53,7 +63,10 @@ for apk_path in apks:
         parts = filename.split('-')
         slug = parts[0] if parts else "unknown"
 
-    download_url = f"https://github.com/{repo_full}/releases/download/{next_ver_code}/{filename}"
+    # Resolve Obtainium App ID (Package Name) from build manifest
+    app_id = pkg_map.get(filename, slug)
+
+    download_url = f"{base_url}/releases/download/{next_ver_code}/{filename}"
     page_url = f"{base_url}/{slug}.html"
     
     # Extract info for display
@@ -76,7 +89,7 @@ for apk_path in apks:
     }
     
     app_json = {
-        "id": slug,
+        "id": app_id,
         "url": page_url,
         "author": owner,
         "name": slug.replace('-', ' ').title(),
