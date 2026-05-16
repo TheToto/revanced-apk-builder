@@ -73,6 +73,15 @@ jobs:
             gh release create "$TAG" ./build/* --title "Release" --notes "$BODY"
           fi
 
+      - name: Generate GitHub Pages
+        env:
+          NEXT_VER_CODE: ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}
+        run: |
+          ./scripts/gen_index.py
+          if [ -d "build" ] && [ "$(ls -A build)" ]; then
+            ./scripts/gen_app_pages.py
+          fi
+
       - name: Update modules changelog and update json
         id: update_config
         run: |
@@ -101,13 +110,16 @@ jobs:
           cd ..
 
           find . -name "*-update.json" | grep . || : >dummy-update.json
+          
+          # Copy generated pages to the update branch
+          cp -a /tmp/pages/* . 2>/dev/null || true
 
       - name: Commit module json changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
       
-          git add build.md *-update.json
+          git add build.md *-update.json *.html
       
           if ! git diff --cached --quiet; then
             git commit -m "Bump version ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}"
