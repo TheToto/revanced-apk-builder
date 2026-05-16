@@ -65,23 +65,88 @@
             margin: 0;
             font-size: 1.25rem;
         }
+        .microg-section {
+            margin-bottom: 3rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .microg-section h2 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+        }
+        .microg-section p {
+            color: var(--text-secondary);
+            margin: 0 0 1.5rem 0;
+            line-height: 1.6;
+        }
+        .microg-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .badge-obtainium {
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+        .badge-obtainium:hover {
+            transform: translateY(-2px) scale(1.02);
+        }
+        .badge-obtainium img {
+            height: 52px;
+            width: auto;
+            border-radius: 8px;
+        }
+        .btn-manual {
+            display: inline-block;
+            padding: 0.85rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95rem;
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+        .btn-manual:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-secondary);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>TheToto Modded APKs Repository</h1>
+
+        <div class="microg-section">
+            <h2>⚙️ MicroG RE</h2>
+            <p>Some apps listed below (notably <strong>YouTube</strong> and <strong>Music</strong>) require <strong>MicroG RE</strong> to work properly on non-rooted devices. It replaces Google Play Services.</p>
+            <div class="microg-actions">
+                <a href="obtainium://app/%7B%22id%22%3A%20%22app.revanced.android.gms%22%2C%20%22url%22%3A%20%22https%3A%2F%2Fgithub.com%2FMorpheApp%2FMicroG-RE%22%2C%20%22author%22%3A%20%22MorpheApp%22%2C%20%22name%22%3A%20%22MicroG%20RE%22%7D" class="badge-obtainium">
+                    <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium">
+                </a>
+                <a href="https://github.com/MorpheApp/MicroG-RE/releases" class="btn-manual">Manual Download</a>
+            </div>
+        </div>
+
         <div class="grid">
-            <a href="youtube-morphe.html" class="card">
-                <h2>YouTube-Morphe</h2>
+            <a href="youtube.html" class="card">
+                <h2>YouTube</h2>
             </a>
-            <a href="music-morphe.html" class="card">
-                <h2>Music-Morphe</h2>
+            <a href="music.html" class="card">
+                <h2>Music</h2>
             </a>
-            <a href="reddit-morphe.html" class="card">
-                <h2>Reddit-Morphe</h2>
+            <a href="reddit.html" class="card">
+                <h2>Reddit</h2>
             </a>
-            <a href="twitteroriginal.html" class="card">
-                <h2>TwitterOriginal</h2>
+            <a href="twitter.html" class="card">
+                <h2>Twitter</h2>
             </a>
             <a href="facebook.html" class="card">
                 <h2>Facebook</h2>

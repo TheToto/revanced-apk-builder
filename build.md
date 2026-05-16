@@ -1,10 +1,10 @@
 Facebook: 561.0.0.42.67  
 Instagram: 426.0.0.37.68  
 Messenger: 560.0.0.55.69  
-Music-Morphe: 8.47.56  
-Reddit-Morphe: 2026.10.0  
-TwitterOriginal: 11.81.0-release.0  
-YouTube-Morphe: 20.47.62  
+Music: 8.47.56  
+Reddit: 2026.10.0  
+Twitter: 11.81.0-release.0  
+YouTube: 20.47.62  
 
 Install [Microg](https://github.com/ReVanced/GmsCore/releases) for non-root YouTube and YT Music APKs  
 Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach YouTube and YT Music modules from Play Store  
