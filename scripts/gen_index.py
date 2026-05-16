@@ -164,6 +164,8 @@ html_content = """<!DOCTYPE html>
 <body>
     <div class="container">
         <h1>TheToto Modded APKs Repository</h1>
+"""
+
 # Build Obtainium link for MicroG RE
 microg_json = json.dumps({
     "id": "app.revanced.android.gms",
@@ -177,7 +179,7 @@ microg_obtainium_link = f"obtainium://app/{microg_encoded}"
 html_content += f"""
         <div class="microg-section">
             <h2>⚙️ MicroG RE</h2>
-            <p>Some apps listed below (notably <strong>YouTube</strong> and <strong>Music</strong>) require <strong>MicroG RE</strong> to work properly on non-rooted devices. It replaces Google Play Services for these patched apps.</p>
+            <p>Some apps listed below (notably <strong>YouTube</strong> and <strong>Music</strong>) require <strong>MicroG RE</strong> to work properly on non-rooted devices. It replaces Google Play Services.</p>
             <div class="microg-actions">
                 <a href="{microg_obtainium_link}" class="badge-obtainium">
                     <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium">
