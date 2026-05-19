@@ -259,7 +259,7 @@ microg_obtainium_link = f"obtainium://app/{microg_encoded}"
 html_content += f"""
         <div class="microg-section">
             <h2>⚙️ MicroG RE</h2>
-            <p>Some apps listed below (notably <strong>YouTube</strong> and <strong>Music</strong>) require <strong>MicroG RE</strong> to work properly on non-rooted devices. It replaces Google Play Services.</p>
+            <p>Some apps listed below (notably <strong>YouTube</strong> and <strong>Music</strong>) require <strong>MicroG RE</strong> to work properly. It replaces Google Play Services.</p>
             <div class="microg-actions">
                 <a href="https://github.com/MorpheApp/MicroG-RE/releases" class="btn-manual">Manual Download</a>
                 <button class="btn-qr" onclick="document.getElementById('qr-modal-apk-microg').classList.add('active')" title="Show APK QR Code">
