@@ -169,4 +169,11 @@ if [ -n "$SKIPPED" ]; then
 	log "$SKIPPED"
 fi
 
+if [ -f "scripts/gen_app_pages.py" ] && [ -d "${BUILD_DIR}" ] && [ "$(ls -A1 "${BUILD_DIR}")" ]; then
+	pr "Generating HTML pages..."
+	export NEXT_VER_CODE=${NEXT_VER_CODE:-$(date +'%Y%m%d')}
+	./scripts/gen_index.py || :
+	./scripts/gen_app_pages.py || epr "Failed to generate app pages"
+fi
+
 pr "Done"
