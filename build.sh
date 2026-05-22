@@ -32,7 +32,6 @@ DEF_PATCHES_VER=$(toml_get "$main_config_t" patches-version) || DEF_PATCHES_VER=
 DEF_CLI_VER=$(toml_get "$main_config_t" cli-version) || DEF_CLI_VER="latest"
 DEF_PATCHES_SRC=$(toml_get "$main_config_t" patches-source) || DEF_PATCHES_SRC="ReVanced/revanced-patches"
 DEF_CLI_SRC=$(toml_get "$main_config_t" cli-source) || DEF_CLI_SRC="ReVanced/revanced-cli"
-DEF_RV_BRAND=$(toml_get "$main_config_t" rv-brand) || DEF_RV_BRAND="ReVanced"
 mkdir -p "$TEMP_DIR" "$BUILD_DIR"
 
 if [ "${2-}" = "--config-update" ]; then
@@ -60,7 +59,7 @@ gh_dl "${MODULE_TEMPLATE_DIR}/bin/x86/cmpr" "https://github.com/j-hc/cmpr/releas
 gh_dl "${MODULE_TEMPLATE_DIR}/bin/x64/cmpr" "https://github.com/j-hc/cmpr/releases/latest/download/cmpr-x86_64"
 
 idx=0
-for table_name in $(toml_get_table_names); do
+while read -r table_name; do
 	if [ -z "$table_name" ]; then continue; fi
 	t=$(toml_get_table "$table_name")
 	enabled=$(toml_get "$t" enabled) || enabled=true
@@ -76,16 +75,39 @@ for table_name in $(toml_get_table_names); do
 	patches_ver=$(toml_get "$t" patches-version) || patches_ver=$DEF_PATCHES_VER
 	cli_src=$(toml_get "$t" cli-source) || cli_src=$DEF_CLI_SRC
 	cli_ver=$(toml_get "$t" cli-version) || cli_ver=$DEF_CLI_VER
+	patch_method=$(toml_get "$t" patch-method) || patch_method="revanced"
+	app_args[patch_method]=$patch_method
 
-	if ! PREBUILTS="$(get_prebuilts "$cli_src" "$cli_ver" "$patches_src" "$patches_ver")"; then
-		epr "Could not get prebuilts"
-		continue
+	if [ "$patch_method" = "lspatch" ]; then
+		if [ "$patches_src" = "$DEF_PATCHES_SRC" ]; then
+			abort "ERROR: patches-source must be defined for patch-method 'lspatch' in '$table_name'"
+		fi
+		xposed_module_source=$patches_src
+		xposed_module_asset=$(toml_get "$t" xposed-module-asset) || abort "ERROR: xposed-module-asset must be defined for patch-method 'lspatch' in '$table_name'"
+		
+		lspatch_jar="$TEMP_DIR/lspatch.jar"
+		if [ ! -f "$lspatch_jar" ]; then
+			dl_github_release_asset "JingMatrix/LSPatch" "latest" "lspatch\\.jar" "$lspatch_jar" || abort "Could not download LSPatch"
+		fi
+		
+		module_slug=${xposed_module_source//\//-}
+		module_apk="$TEMP_DIR/${module_slug}-latest.apk"
+		dl_github_release_asset "$xposed_module_source" "latest" "$xposed_module_asset" "$module_apk" "Patches" || abort "Could not download Xposed module from $xposed_module_source"
+		
+		app_args[lspatch_jar]=$lspatch_jar
+		app_args[module_apk]=$module_apk
+	else
+		if ! PREBUILTS="$(get_prebuilts "$cli_src" "$cli_ver" "$patches_src" "$patches_ver")"; then
+			epr "Could not get prebuilts"
+			continue
+		fi
+		read -r cli_jar patches_jar <<<"$PREBUILTS"
+		app_args[cli]=$cli_jar
+		app_args[ptjar]=$patches_jar
 	fi
-	read -r cli_jar patches_jar <<<"$PREBUILTS"
-	app_args[cli]=$cli_jar
-	app_args[ptjar]=$patches_jar
-	app_args[rv_brand]=$(toml_get "$t" rv-brand) || app_args[rv_brand]=$DEF_RV_BRAND
-
+	if ! app_args[rv_brand]=$(toml_get "$t" rv-brand); then
+		app_args[rv_brand]="${patches_src%%/*}"
+	fi
 	app_args[excluded_patches]=$(toml_get "$t" excluded-patches) || app_args[excluded_patches]=""
 	if [ -n "${app_args[excluded_patches]}" ] && [[ ${app_args[excluded_patches]} != *'"'* ]]; then abort "patch names inside excluded-patches must be quoted"; fi
 	app_args[included_patches]=$(toml_get "$t" included-patches) || app_args[included_patches]=""
@@ -153,7 +175,7 @@ for table_name in $(toml_get_table_names); do
 		idx=$((idx + 1))
 		build_rv "$(declare -p app_args)" &
 	fi
-done
+done < <(toml_get_table_names)
 wait
 rm -rf temp/tmp.*
 if [ -z "$(ls -A1 "${BUILD_DIR}")" ]; then abort "All builds failed."; fi
@@ -172,8 +194,8 @@ fi
 if [ -f "scripts/gen_app_pages.py" ] && [ -d "${BUILD_DIR}" ] && [ "$(ls -A1 "${BUILD_DIR}")" ]; then
 	pr "Generating HTML pages..."
 	export NEXT_VER_CODE=${NEXT_VER_CODE:-$(date +'%Y%m%d')}
-	./scripts/gen_index.py || :
-	./scripts/gen_app_pages.py || epr "Failed to generate app pages"
+	./scripts/gen_index.py "${1:-config.toml}" || :
+	./scripts/gen_app_pages.py "${1:-config.toml}" || epr "Failed to generate app pages"
 fi
 
 pr "Done"

@@ -8,3 +8,4 @@ build.md
 cmpr
 *-temporary-files
 __pycache__
+temp_config.toml

@@ -17,17 +17,23 @@ def get_enabled_apps(config_path="config.toml"):
             config = tomllib.load(f)
                 
         global_patches_src = config.get("patches-source", "ReVanced/revanced-patches")
-        global_rv_brand = config.get("rv-brand", "ReVanced")
+        global_rv_brand = config.get("rv-brand", global_patches_src.split('/')[0])
         
         for app_name, app_config in config.items():
             if isinstance(app_config, dict):
                 is_enabled = app_config.get('enabled', True)
                 if is_enabled is True or str(is_enabled).lower() == 'true':
                     slug = app_name.lower().replace(' ', '-')
+                    app_patches_src = app_config.get("patches-source", global_patches_src)
+                    if "rv-brand" in app_config:
+                        app_brand = app_config["rv-brand"]
+                    else:
+                        app_brand = app_patches_src.split('/')[0]
+
                     enabled[slug] = {
                         "name": app_name,
-                        "brand": app_config.get("rv-brand", global_rv_brand),
-                        "patches-source": app_config.get("patches-source", global_patches_src),
+                        "brand": app_brand,
+                        "patches-source": app_patches_src,
                         "config": app_config
                     }
     except Exception as e:

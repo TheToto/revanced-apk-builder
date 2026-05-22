@@ -167,7 +167,7 @@ config_update() {
 	: >"$TEMP_DIR"/skipped
 	local upped=()
 	local prcfg=false
-	for table_name in $(toml_get_table_names); do
+	while read -r table_name; do
 		if [ -z "$table_name" ]; then continue; fi
 		t=$(toml_get_table "$table_name")
 		enabled=$(toml_get "$t" enabled) || enabled=true
@@ -199,7 +199,7 @@ config_update() {
 				fi
 			fi
 		fi
-	done
+	done < <(toml_get_table_names)
 	if [ "$prcfg" = true ]; then
 		local query=""
 		for table in "${upped[@]}"; do
@@ -238,6 +238,33 @@ gh_dl() {
 		_req "$2" "$1" -H "$GH_HEADER" -H "Accept: application/octet-stream"
 	fi
 }
+dl_github_release_asset() {
+	local repo=$1 tag=$2 pattern=$3 dest=$4 log_tag=${5-}
+	local rel_url="https://api.github.com/repos/${repo}/releases"
+	if [ "$tag" = "latest" ]; then
+		rel_url+="/latest"
+	else
+		rel_url+="/tags/${tag}"
+	fi
+
+	local resp
+	resp=$(gh_req "$rel_url" -) || return 1
+
+	local download_url asset_name
+	download_url=$(jq -r --arg pat "$pattern" '.assets[] | select(.name | test($pat)) | .browser_download_url' <<<"$resp" | head -1)
+	asset_name=$(jq -r --arg pat "$pattern" '.assets[] | select(.name | test($pat)) | .name' <<<"$resp" | head -1)
+	if [ -z "$download_url" ] || [ "$download_url" = "null" ]; then
+		epr "No asset matching pattern '$pattern' found in ${repo} (${tag})"
+		return 1
+	fi
+	gh_dl "$dest" "$download_url"
+	if [ -n "$log_tag" ]; then
+		local cl_dir="${TEMP_DIR}/${repo%%/*}"
+		mkdir -p "$cl_dir"
+		echo "${log_tag}: $(cut -d/ -f1 <<<"$repo")/${asset_name}  " >>"${cl_dir}/changelog.md"
+	fi
+}
+
 
 log() { echo -e "$1  " >>"build.md"; }
 get_highest_ver() {
@@ -559,6 +586,30 @@ patch_apk() {
 	fi
 }
 
+patch_lspatch() {
+	local stock_input=$1 patched_apk=$2 lspatch_jar=$3 module_apk=$4
+	local out_dir
+	out_dir=$(dirname "$patched_apk")
+
+	local cmd="java -jar '$lspatch_jar' '$stock_input' -k ks-p12.keystore 123456789 jhc 123456789 -m '$module_apk' -o '$out_dir'"
+	pr "$cmd"
+	if eval "$cmd"; then
+		local lspatched_file
+		lspatched_file=$(find "$out_dir" -name "*-lspatched.apk" | head -1)
+		if [ -f "$lspatched_file" ]; then
+			mv -f "$lspatched_file" "$patched_apk"
+			return 0
+		else
+			epr "LSPatch output file not found in $out_dir!"
+			return 1
+		fi
+	else
+		epr "LSPatch command failed!"
+		return 1
+	fi
+}
+
+
 check_sig() {
 	local file=$1 pkg_name=$2
 	local sig
@@ -570,6 +621,7 @@ check_sig() {
 }
 
 build_rv() {
+	local list_patches=""
 	eval "declare -A args=${1#*=}"
 	local version="" pkg_name=""
 	local mode_arg=${args[build_mode]} version_mode=${args[version]}
@@ -608,26 +660,33 @@ build_rv() {
 		return 0
 	fi
 	pr "Package name of '${table}' is '$pkg_name'"
-	local list_patches
-	list_patches=$(patches_list "$cli_jar" "$patches_jar" "$pkg_name") || return 1
-	local get_latest_ver=false
-	if [ "$version_mode" = auto ]; then
-		if ! version=$(get_patch_last_supported_ver "$list_patches" "$pkg_name" \
-			"${args[included_patches]}" "${args[excluded_patches]}" "${args[exclusive_patches]}"); then
-			epr "get_patch_last_supported_ver failed '$list_patches'"
-			return
-		elif [ -z "$version" ]; then get_latest_ver=true; fi
-	elif isoneof "$version_mode" latest beta; then
-		get_latest_ver=true
-		p_patcher_args+=("-f")
-	else
+	if [ "${args[patch_method]}" = "lspatch" ]; then
 		version=$version_mode
-		p_patcher_args+=("-f")
-	fi
-	if [ $get_latest_ver = true ]; then
-		if [ "$version_mode" = beta ]; then __AAV__="true"; else __AAV__="false"; fi
-		pkgvers=$(get_"${dl_from}"_vers)
-		version=$(get_highest_ver <<<"$pkgvers") || version=$(head -1 <<<"$pkgvers")
+		if [ "$version" = "latest" ] || [ "$version" = "auto" ]; then
+			pkgvers=$(get_"${dl_from}"_vers)
+			version=$(get_highest_ver <<<"$pkgvers") || version=$(head -1 <<<"$pkgvers")
+		fi
+	else
+		list_patches=$(patches_list "$cli_jar" "$patches_jar" "$pkg_name") || return 1
+		local get_latest_ver=false
+		if [ "$version_mode" = auto ]; then
+			if ! version=$(get_patch_last_supported_ver "$list_patches" "$pkg_name" \
+				"${args[included_patches]}" "${args[excluded_patches]}" "${args[exclusive_patches]}"); then
+				epr "get_patch_last_supported_ver failed '$list_patches'"
+				return
+			elif [ -z "$version" ]; then get_latest_ver=true; fi
+		elif isoneof "$version_mode" latest beta; then
+			get_latest_ver=true
+			p_patcher_args+=("-f")
+		else
+			version=$version_mode
+			p_patcher_args+=("-f")
+		fi
+		if [ $get_latest_ver = true ]; then
+			if [ "$version_mode" = beta ]; then __AAV__="true"; else __AAV__="false"; fi
+			pkgvers=$(get_"${dl_from}"_vers)
+			version=$(get_highest_ver <<<"$pkgvers") || version=$(head -1 <<<"$pkgvers")
+		fi
 	fi
 	if [ -z "$version" ]; then
 		epr "empty version, not building ${table}."
@@ -734,15 +793,24 @@ build_rv() {
 
 		local apk_output="${BUILD_DIR}/${app_name_l}-${rv_brand_f}-v${version_f}-${arch_f}.apk"
 		if [ "${NORB:-}" != true ] || { [ ! -f "$patched_apk" ] && [ ! -f "$apk_output" ]; }; then
-			if ! patch_apk "$stock_apk_to_patch" "$patched_apk" "${patcher_args[*]}" "${args[cli]}" "${args[ptjar]}"; then
-				epr "Building '${table}' failed!"
-				return 0
+			if [ "${args[patch_method]}" = "lspatch" ]; then
+				if ! patch_lspatch "$stock_apk_to_patch" "$patched_apk" "${args[lspatch_jar]}" "${args[module_apk]}"; then
+					epr "Building '${table}' failed!"
+					return 0
+				fi
+			else
+				if ! patch_apk "$stock_apk_to_patch" "$patched_apk" "${patcher_args[*]}" "${args[cli]}" "${args[ptjar]}"; then
+					epr "Building '${table}' failed!"
+					return 0
+				fi
 			fi
 		fi
 		rm "$stock_apk_to_patch"
 		# Save list of all compatible patches as JSON alongside the APK
 		local patches_json_output="${BUILD_DIR}/${app_name_l}-${rv_brand_f}-v${version_f}-${arch_f}.patches.json"
-		if [ -n "$list_patches" ]; then
+		if [ "${args[patch_method]}" = "lspatch" ]; then
+			echo "{\"exclusive\": false, \"patches\": [{\"name\": \"Xposed Module Injection\", \"description\": \"Injected $(basename "${args[module_apk]}") module into the APK via LSPatch.\", \"default_enabled\": true, \"explicitly_enabled\": true, \"explicitly_disabled\": false}]}" > "$patches_json_output"
+		elif [ -n "$list_patches" ]; then
 			python3 scripts/parse_patches.py "${args[included_patches]}" "${args[excluded_patches]}" "${args[exclusive_patches]}" <<< "$list_patches" > "$patches_json_output"
 			pr "Saved all compatible patches list to '${patches_json_output}'"
 		fi
@@ -760,7 +828,12 @@ build_rv() {
 
 		module_config "$base_template" "$pkg_name" "$version" "$arch"
 
-		local patches_ver="${patches_jar##*-}"
+		local patches_ver=""
+		if [ "${args[patch_method]}" = "lspatch" ]; then
+			patches_ver="lspatch"
+		else
+			patches_ver="${patches_jar##*-}"
+		fi
 		module_prop \
 			"${args[module_prop_name]}" \
 			"${app_name} ${args[rv_brand]}" \

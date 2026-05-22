@@ -88,26 +88,23 @@ uptodown-dlurl = "https://twitch.en.uptodown.com/android"
 
 [Facebook]
 enabled = true
+patch-method = "lspatch"
+patches-source = "gnadgnaoh/NexAlloy"
+xposed-module-asset = "NexAlloy-nonroot-release.*\\.apk"
 apkmirror-dlurl = "https://www.apkmirror.com/apk/facebook-2/facebook/"
 uptodown-dlurl = "https://facebook.en.uptodown.com/android"
 arch = "arm64-v8a"
-patches-source = "RookieEnough/De-Vanced"
-cli-source = "MorpheApp/morphe-cli"
-rv-brand = "DeVanced"
 build-mode = "apk"
-excluded-patches = "'Hide \\'Sponsored Stories\\''" # Broken
-version = "latest"
 
 [Messenger]
 enabled = true
+patch-method = "lspatch"
+patches-source = "gnadgnaoh/NexAlloy"
+xposed-module-asset = "NexAlloy-nonroot-release.*\\.apk"
 apkmirror-dlurl = "https://www.apkmirror.com/apk/facebook-2/messenger/"
 uptodown-dlurl = "https://facebook-messenger.en.uptodown.com/android"
 arch = "arm64-v8a"
-patches-source = "RookieEnough/De-Vanced"
-cli-source = "MorpheApp/morphe-cli"
-rv-brand = "DeVanced"
 build-mode = "apk"
-excluded-patches = "'Hide inbox ads'" # Broken
 
 [Instagram]
 enabled = true
@@ -136,5 +133,15 @@ cli-source = "MorpheApp/morphe-cli"
 rv-brand = "hoo-dles"
 apkmirror-dlurl = "https://www.apkmirror.com/apk/proton-technologies-ag/protonvpn-secure-and-free-vpn/"
 uptodown-dlurl = "https://protonvpn.en.uptodown.com/android"
+arch = "arm64-v8a"
+build-mode = "apk"
+
+[Discord]
+enabled = true
+patch-method = "lspatch"
+patches-source = "revenge-mod/revenge-xposed"
+xposed-module-asset = "app-release\\.apk"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/discord-inc/discord/"
+uptodown-dlurl = "https://discord-chat-for-gamers.en.uptodown.com/android"
 arch = "arm64-v8a"
 build-mode = "apk"

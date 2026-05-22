@@ -9,7 +9,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 from config_utils import get_enabled_apps, get_repo_details, QR_SVG
 
 owner, repo_name = get_repo_details()
-enabled_apps = get_enabled_apps()
+config_path = sys.argv[1] if len(sys.argv) > 1 else "config.toml"
+enabled_apps = get_enabled_apps(config_path)
 active_apps = []
 for slug, info in enabled_apps.items():
     active_apps.append({
@@ -50,7 +51,7 @@ html_content += f"""
         <div class="tools-grid">
             <div class="obtainium-section">
                 <h2>📥 Obtainium</h2>
-                <p>Installez <strong>Obtainium</strong> pour ajouter facilement nos applications et bénéficier de <strong>mises à jour automatiques</strong> via nos liens d'installation rapide.</p>
+                <p>Installez <strong>Obtainium</strong> pour ajouter facilement les applications et bénéficier des <strong>mises à jour automatiques</strong>.</p>
                 <div class="obtainium-actions">
                     <a href="https://obtainium.imranr.dev/" class="btn-manual" target="_blank" rel="noopener">Installer Obtainium</a>
                     <button class="btn-qr" onclick="document.getElementById('qr-modal-obtainium').classList.add('active')" title="Scanner le QR Code">
