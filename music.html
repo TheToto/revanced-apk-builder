@@ -4,226 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download Music</title>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --border: #334155;
-            --obtainium-color: #10b981;
-            --obtainium-hover: #059669;
-        }
-        * { box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 3rem 2rem;
-            text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-        }
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            color: var(--text-secondary);
-            text-decoration: none;
-            margin-bottom: 2rem;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-        .back-link:hover {
-            color: var(--text-primary);
-        }
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .app-icon-wrap {
-            width: 72px;
-            height: 72px;
-            border-radius: 16px;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-        }
-        .app-icon {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            transform: scale(1.35);
-        }
-        h1 {
-            margin: 0;
-            font-size: 2.2rem;
-            text-transform: capitalize;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 2.5rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .info-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .info-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 0.05em;
-        }
-        .info-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        .filename-raw {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            word-break: break-all;
-            background: rgba(0,0,0,0.2);
-            padding: 0.5rem;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }
-        .actions {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 1rem 0.75rem;
-            width: 100%;
-            max-width: 270px;
-            margin: 0 auto;
-            align-items: center;
-        }
-        .actions > a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 52px;
-            width: 100%;
-        }
-        .btn {
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-        .btn-download {
-            background-color: var(--accent);
-            color: #fff;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
-        }
-        .btn-download:hover {
-            background-color: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
-        }
-        .badge-obtainium {
-            display: inline-block;
-            transition: transform 0.2s ease;
-        }
-        .badge-obtainium:hover {
-            transform: translateY(-2px) scale(1.02);
-        }
-        .badge-obtainium img {
-            height: 52px;
-            width: 100%;
-            max-width: 170px;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-        .btn-qr {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            padding: 0;
-            width: 52px;
-            height: 52px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-qr:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-content {
-            background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            text-align: center;
-            position: relative;
-            max-width: 90%;
-            animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .modal-close {
-            position: absolute;
-            top: 1rem; right: 1rem;
-            background: none; border: none;
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            line-height: 1;
-            padding: 0.5rem;
-        }
-        .modal-close:hover { color: var(--text-primary); }
-    </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
-<body>
-    <div class="container">
+<body class="app-page">
+    <div class="container app-container">
         <a href="index.html" class="back-link">← Back to Apps List</a>
         <div class="header-content">
             <div class="app-icon-wrap">
@@ -256,7 +40,7 @@
         </div>
         
         <div class="actions">
-            <a href="https://apk.thetoto.fr/releases/download/17/music-morphe-v8.47.56-arm64-v8a.apk" class="btn btn-download">Download APK</a>
+            <a href="https://apk.thetoto.fr/releases/download/20/music-morphe-v8.47.56-arm64-v8a.apk" class="btn btn-download">Download APK</a>
             <button class="btn-qr" onclick="document.getElementById('qr-modal-apk').classList.add('active')" title="Show APK QR Code">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="5" height="5" x="3" y="3" rx="1"/>
@@ -294,13 +78,245 @@
                 </svg>
             </button>
         </div>
+        
+        <div class="patches-section">
+            <h3 class="patches-title">⚙️ Applied Patches (24/28)</h3>
+            <div class="patches-list">
+
+                <div class="patch-card excluded">
+                    <div class="patch-header">
+                        <span class="patch-name">Custom branding</span>
+                        <span class="patch-status status-excluded">Explicitly Disabled</span>
+                    </div>
+                    <div class="patch-desc">Adds options to change the app icon and app name. Branding cannot be changed for mounted (root) installations.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Bypass certificate checks</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Bypasses certificate checks which prevent YouTube Music from working on Android Auto.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Change header</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to change the header logo in the top left corner of the app.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Change miniplayer color</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to change the miniplayer background color to match the fullscreen player.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Change start page</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to set which page the app opens in instead of the homepage.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Check watch history domain name resolution</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Checks if the device DNS server is preventing user watch history from being saved.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Disable DRC audio</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to disable DRC (Dynamic Range Compression) audio.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Disable QUIC protocol</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to disable QUIC (Quick UDP Internet Connections) network protocol.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Enable debugging</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds options for debugging and exporting Morphe logs to the clipboard.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Enable exclusive audio playback</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Enables the option to play audio without video.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Enable forced miniplayer</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to enable forced miniplayer when switching between music videos, podcasts, or songs.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Force original audio</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to always use the original audio track.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">GmsCore support</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Allows the app to work without root by using a different package name when patched using a GmsCore instead of Google Play Services.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide ads</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds options to hide ads such as the fullscreen Premium popup and "Get Music Premium" label.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide buttons</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds options to hide the cast, history, notification, and search buttons.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide category bar</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to hide the category bar at the top of the homepage.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide music video ads</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to hide ads that appear while listening to or streaming music videos, podcasts, or songs.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Miniplayer previous and next buttons</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds options to show previous and next track buttons in the miniplayer.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Navigation bar</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds options to hide navigation bar, labels and buttons.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Permanent repeat</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to always repeat even if the playlist ends or another track is played.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Remove background playback restrictions</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Removes restrictions on background playback, including playing kids videos in the background.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Sanitize sharing links</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Removes the tracking query parameters from shared links.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Spoof video streams</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds options to spoof the client video streams to fix playback.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Theme</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds options for theming and applies a custom background theme (dark background theme defaults to pure black).</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Track crossfade</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds a true dual-player crossfade between consecutive tracks. This patch currently requires YouTube 8.x</div>
+                </div>
+
+                <div class="patch-card disabled">
+                    <div class="patch-header">
+                        <span class="patch-name">Change package name</span>
+                        <span class="patch-status status-disabled">Disabled</span>
+                    </div>
+                    <div class="patch-desc">Appends ".morphe" to the package name by default. Changing the package name of the app can lead to unexpected issues.</div>
+                </div>
+
+                <div class="patch-card disabled">
+                    <div class="patch-header">
+                        <span class="patch-name">Disable Play Store updates</span>
+                        <span class="patch-status status-disabled">Disabled</span>
+                    </div>
+                    <div class="patch-desc">Disables Play Store updates by setting the version code to the maximum allowed. This patch does not work if the app is installed by mounting and may cause unexpected issues with some apps.</div>
+                </div>
+
+                <div class="patch-card disabled">
+                    <div class="patch-header">
+                        <span class="patch-name">Override certificate pinning</span>
+                        <span class="patch-status status-disabled">Disabled</span>
+                    </div>
+                    <div class="patch-desc">Overrides certificate pinning, allowing to inspect traffic via a proxy.</div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
     <div class="modal-overlay" id="qr-modal-apk" onclick="if(event.target === this) this.classList.remove('active')">
         <div class="modal-content">
             <button class="modal-close" onclick="document.getElementById('qr-modal-apk').classList.remove('active')">&times;</button>
             <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to Download APK</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=https%3A%2F%2Fapk.thetoto.fr%2Freleases%2Fdownload%2F17%2Fmusic-morphe-v8.47.56-arm64-v8a.apk" alt="APK QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=https%3A%2F%2Fapk.thetoto.fr%2Freleases%2Fdownload%2F20%2Fmusic-morphe-v8.47.56-arm64-v8a.apk" alt="APK QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
         </div>
     </div>
 

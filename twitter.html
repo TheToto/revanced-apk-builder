@@ -4,226 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download Twitter</title>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --border: #334155;
-            --obtainium-color: #10b981;
-            --obtainium-hover: #059669;
-        }
-        * { box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 3rem 2rem;
-            text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-        }
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            color: var(--text-secondary);
-            text-decoration: none;
-            margin-bottom: 2rem;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-        .back-link:hover {
-            color: var(--text-primary);
-        }
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .app-icon-wrap {
-            width: 72px;
-            height: 72px;
-            border-radius: 16px;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-        }
-        .app-icon {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            transform: scale(1.35);
-        }
-        h1 {
-            margin: 0;
-            font-size: 2.2rem;
-            text-transform: capitalize;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 2.5rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .info-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .info-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 0.05em;
-        }
-        .info-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        .filename-raw {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            word-break: break-all;
-            background: rgba(0,0,0,0.2);
-            padding: 0.5rem;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }
-        .actions {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 1rem 0.75rem;
-            width: 100%;
-            max-width: 270px;
-            margin: 0 auto;
-            align-items: center;
-        }
-        .actions > a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 52px;
-            width: 100%;
-        }
-        .btn {
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-        .btn-download {
-            background-color: var(--accent);
-            color: #fff;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
-        }
-        .btn-download:hover {
-            background-color: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
-        }
-        .badge-obtainium {
-            display: inline-block;
-            transition: transform 0.2s ease;
-        }
-        .badge-obtainium:hover {
-            transform: translateY(-2px) scale(1.02);
-        }
-        .badge-obtainium img {
-            height: 52px;
-            width: 100%;
-            max-width: 170px;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-        .btn-qr {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            padding: 0;
-            width: 52px;
-            height: 52px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-qr:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-content {
-            background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            text-align: center;
-            position: relative;
-            max-width: 90%;
-            animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .modal-close {
-            position: absolute;
-            top: 1rem; right: 1rem;
-            background: none; border: none;
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            line-height: 1;
-            padding: 0.5rem;
-        }
-        .modal-close:hover { color: var(--text-primary); }
-    </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
-<body>
-    <div class="container">
+<body class="app-page">
+    <div class="container app-container">
         <a href="index.html" class="back-link">← Back to Apps List</a>
         <div class="header-content">
             <div class="app-icon-wrap">
@@ -256,7 +40,7 @@
         </div>
         
         <div class="actions">
-            <a href="https://apk.thetoto.fr/releases/download/17/twitter-piko-v11.81.0-release.0-all.apk" class="btn btn-download">Download APK</a>
+            <a href="https://apk.thetoto.fr/releases/download/20/twitter-piko-v11.81.0-release.0-all.apk" class="btn btn-download">Download APK</a>
             <button class="btn-qr" onclick="document.getElementById('qr-modal-apk').classList.add('active')" title="Show APK QR Code">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="5" height="5" x="3" y="3" rx="1"/>
@@ -294,13 +78,589 @@
                 </svg>
             </button>
         </div>
+        
+        <div class="patches-section">
+            <h3 class="patches-title">⚙️ Applied Patches (66/71)</h3>
+            <div class="patches-list">
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Add ability to copy media link</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Change app icon</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Change version code</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Changes the version code of the app. This will turn off app store updates and allows downgrading an existing app install to an older app version.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Clear tracking params</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Removes tracking parameters when sharing links</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Control video auto scroll</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Control video auto scroll in immersive view</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Custom download folder</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Change the download directory for video downloads</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Custom emoji font</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Customise emoji font style</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Custom font</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Customise font style</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Custom sharing domain</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Allows for using domains like fxtwitter when sharing tweets/posts.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Customise post font size</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Customize default reply sorting</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Customize explore tabs</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Customize Inline action Bar items</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Customize Navigation Bar items</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Customize notification tabs</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Customize profile tabs</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Customize search suggestions</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Customize search tab items</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Customize side bar items</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Customize timeline top bar</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Delete from database</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Delete entries from database(cache)</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Disable auto timeline scroll on launch</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Disable chirp font</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Download patch</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Unlocks the ability to download videos and gifs from Twitter/X</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Enable debug menu for posts</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Enable force HD videos</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Videos will be played in highest quality always</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Enable PiP mode automatically</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Enables PiP mode when you close the app</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Enable Undo Posts</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Enables ability to undo posts before posting</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Force enable translate</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Get translate option for all posts</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Handle custom twitter links</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds support for opening custom twitter links such as vxtwitter, fxtwitter, and fixupx within the app. These will have to be manually enabled under the "Open by default" section in the app info!</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide badges from navigation bar icons</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Hides notification nudges & counts from navigation bar icons</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide Banner</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Hide new post banner</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide bookmark icon in timeline</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide community badges</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide Community Notes</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide FAB</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to hide Floating action button</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide FAB Menu Buttons</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide followed by context</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Hides followed by context under profile</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide hidden replies</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide immersive player</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Removes swipe up for more videos in video player</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide Live Threads</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide nudge button</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Hides follow/subscribe/follow back buttons on posts</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide post metrics</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Hides like, reposts etc counts.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide promote button</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Hides promote button under self posts</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide recommendation items</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds options to hide recommendation items such as "Who to follow" and "Today's news" in timeline, search, and replies.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hide Recommended Users</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Hide recommended users that pops up when you follow someone</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Hook feature flag</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Import/Export login token</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an feature to export and import the token of accounts. This is useful when logging in on your second device or when re-installing piko.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Legacy share links</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Brings back username on post share links. Works post 11.4x.xx</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Log server response</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Log json responses received from server</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Native downloader</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Requires X 11.0.0-release.0 or higher.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Native reader mode</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Requires X 11.0.0-release.0 or higher.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Native translator</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Requires X 11.0.0-release.0 or higher.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">No shortened URL</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Get rid of t.co short urls.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Pause search suggestions</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Search suggestions will not be saved locally</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Remove Ads</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Removed promoted posts, trends and google ads</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Remove premium upsell</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Removes premium upsell in home timeline</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Remove search suggestions</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Hide/Remove search suggestion in explore section</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Remove view count</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Removes the view count from the bottom of tweets</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Round off numbers</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Enable or disable rounding off numbers</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Selectable Text</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Makes bio and username selectable</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Share Tweet as Image</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Share tweets as rendered image. Requires X 11.0.0-release.0 or higher.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Show changelogs</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Shows changelogs when new a patch is installed.</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Show poll results</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to show poll results without voting</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Show post source label</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">Source label will be shown only on public posts</div>
+                </div>
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Show sensitive media</span>
+                        <span class="patch-status status-applied">Enabled</span>
+                    </div>
+                    <div class="patch-desc">No description available.</div>
+                </div>
+
+                <div class="patch-card disabled">
+                    <div class="patch-header">
+                        <span class="patch-name">Bring back twitter</span>
+                        <span class="patch-status status-disabled">Disabled</span>
+                    </div>
+                    <div class="patch-desc">Bring back old twitter logo and name</div>
+                </div>
+
+                <div class="patch-card disabled">
+                    <div class="patch-header">
+                        <span class="patch-name">Browse tweet object</span>
+                        <span class="patch-status status-disabled">Disabled</span>
+                    </div>
+                    <div class="patch-desc">Adds an option to browse the tweet object in the share menu.</div>
+                </div>
+
+                <div class="patch-card disabled">
+                    <div class="patch-header">
+                        <span class="patch-name">Disunify xchat system</span>
+                        <span class="patch-status status-disabled">Disabled</span>
+                    </div>
+                    <div class="patch-desc">Bring back legacy features like messages and share sheet.</div>
+                </div>
+
+                <div class="patch-card disabled">
+                    <div class="patch-header">
+                        <span class="patch-name">Dynamic color</span>
+                        <span class="patch-status status-disabled">Disabled</span>
+                    </div>
+                    <div class="patch-desc">Replaces the default Twitter Blue with the user's Material You palette.</div>
+                </div>
+
+                <div class="patch-card disabled">
+                    <div class="patch-header">
+                        <span class="patch-name">Export all activities</span>
+                        <span class="patch-status status-disabled">Disabled</span>
+                    </div>
+                    <div class="patch-desc">Makes all app activities exportable.</div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
     <div class="modal-overlay" id="qr-modal-apk" onclick="if(event.target === this) this.classList.remove('active')">
         <div class="modal-content">
             <button class="modal-close" onclick="document.getElementById('qr-modal-apk').classList.remove('active')">&times;</button>
             <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to Download APK</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=https%3A%2F%2Fapk.thetoto.fr%2Freleases%2Fdownload%2F17%2Ftwitter-piko-v11.81.0-release.0-all.apk" alt="APK QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=https%3A%2F%2Fapk.thetoto.fr%2Freleases%2Fdownload%2F20%2Ftwitter-piko-v11.81.0-release.0-all.apk" alt="APK QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
         </div>
     </div>
 
