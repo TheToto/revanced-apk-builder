@@ -92,6 +92,10 @@ for app in active_apps:
             </a>\n"""
 
 html_content += f"""        </div>
+        
+        <footer>
+            <p>Source code and CI on GitHub: <a href="https://github.com/{owner}/{repo_name}" target="_blank" rel="noopener">{owner}/{repo_name}</a></p>
+        </footer>
     </div>
     
     <div class="modal-overlay" id="qr-modal-apk-microg" onclick="if(event.target === this) this.classList.remove('active')">

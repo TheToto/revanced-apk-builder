@@ -81,17 +81,23 @@ for apk_path in apks:
         import shutil
         shutil.copy2(icon_out_path, icon_pages_path)
     
-    # Extract info for display
+    # Extract info from filename (with fallback values)
     m = re.search(r"^(.*?)-v([0-9a-zA-Z.-]+)-((?:arm64-v8a|arm-v7a|x86_64|x86|all))\.apk$", filename)
     if m:
-        brand_part = m.group(1)
-        brand = brand_part[len(slug)+1:] if brand_part.startswith(slug+"-") else brand_part
-        if not brand:
-            brand = "Original"
+        brand_extracted = m.group(1)
+        brand_extracted = brand_extracted[len(slug)+1:] if brand_extracted.startswith(slug+"-") else brand_extracted
+        if not brand_extracted:
+            brand_extracted = "Original"
         version = m.group(2)
         arch = m.group(3)
     else:
-        brand, version, arch = "Unknown", "Unknown", "Unknown"
+        brand_extracted, version, arch = "Unknown", "Unknown", "Unknown"
+
+    # Get brand and patches-source from TOML
+    app_info = enabled_apps.get(slug, {})
+    brand = app_info.get("brand", brand_extracted)
+    patches_src = app_info.get("patches-source", "ReVanced/revanced-patches")
+    brand_link = patches_src if (patches_src.startswith("http://") or patches_src.startswith("https://")) else f"https://github.com/{patches_src}"
 
     # Craft the Obtainium JSON payload
     additional_settings = {
@@ -232,7 +238,7 @@ for apk_path in apks:
             </div>
             <div class="info-item">
                 <span class="info-label">Brand</span>
-                <span class="info-value" style="text-transform: capitalize;">{brand}</span>
+                <span class="info-value"><a href="{brand_link}" class="brand-link" target="_blank" rel="noopener">{brand}</a></span>
             </div>
             <div class="info-item">
                 <span class="info-label">Architecture</span>
@@ -262,6 +268,10 @@ for apk_path in apks:
             </button>
         </div>
         {patches_list_html}
+        
+        <footer>
+            <p>Source code and CI on GitHub: <a href="https://github.com/{owner}/{repo_name}" target="_blank" rel="noopener">{owner}/{repo_name}</a></p>
+        </footer>
     </div>
 
     <div class="modal-overlay" id="qr-modal-apk" onclick="if(event.target === this) this.classList.remove('active')">

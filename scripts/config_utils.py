@@ -7,13 +7,18 @@ def get_enabled_apps(config_path="config.toml"):
     Reads the config file and returns a dictionary of active/enabled apps.
     Key is the slug, value is a dictionary containing:
       - name: the app name/section key
-      - brand: the rv-brand value (defaults to 'ReVanced')
+      - brand: the rv-brand value (defaults to global rv-brand or 'ReVanced')
       - config: the raw app config dictionary
     """
     enabled = {}
+    
     try:
         with open(config_path, "rb") as f:
             config = tomllib.load(f)
+                
+        global_patches_src = config.get("patches-source", "ReVanced/revanced-patches")
+        global_rv_brand = config.get("rv-brand", "ReVanced")
+        
         for app_name, app_config in config.items():
             if isinstance(app_config, dict):
                 is_enabled = app_config.get('enabled', True)
@@ -21,7 +26,8 @@ def get_enabled_apps(config_path="config.toml"):
                     slug = app_name.lower().replace(' ', '-')
                     enabled[slug] = {
                         "name": app_name,
-                        "brand": app_config.get("rv-brand", "ReVanced"),
+                        "brand": app_config.get("rv-brand", global_rv_brand),
+                        "patches-source": app_config.get("patches-source", global_patches_src),
                         "config": app_config
                     }
     except Exception as e:
@@ -33,11 +39,11 @@ def get_repo_details():
     Returns (owner, repo_name) from GITHUB_REPOSITORY environment variable,
     with fallbacks for local running.
     """
-    repo_full = os.environ.get("GITHUB_REPOSITORY", "TheToto/revanced-magisk-module")
+    repo_full = os.environ.get("GITHUB_REPOSITORY", "TheToto/revanced-apk-builder")
     try:
         owner, repo_name = repo_full.split('/')
     except ValueError:
-        owner, repo_name = "TheToto", "revanced-magisk-module"
+        owner, repo_name = "TheToto", "revanced-apk-builder"
     return owner, repo_name
 
 def load_svg(filename):

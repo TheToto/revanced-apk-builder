@@ -248,19 +248,13 @@ h1 {
 /* Info Grid */
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     margin-bottom: 2.5rem;
     background: rgba(255, 255, 255, 0.03);
     border-radius: 12px;
     padding: 1.5rem;
     border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.app-container[class*="error"] .info-grid, 
-body:not(.app-page) .info-grid, 
-.info-grid:has(span[style*="Build Failed"]) {
-    grid-template-columns: repeat(2, 1fr);
 }
 
 .info-item {
@@ -279,6 +273,17 @@ body:not(.app-page) .info-grid,
 .info-value {
     font-size: 1.1rem;
     font-weight: 600;
+}
+
+.brand-link {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.brand-link:hover {
+    color: #60a5fa;
+    opacity: 0.9;
 }
 
 .filename-raw {
@@ -621,4 +626,31 @@ body:not(.app-page) .info-grid,
     font-size: 0.9rem;
     color: var(--text-secondary);
     line-height: 1.6;
+}
+
+/* Footer styling */
+footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    width: 100%;
+}
+
+footer p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+footer a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+footer a:hover {
+    color: #60a5fa;
+    text-decoration: underline;
 }
