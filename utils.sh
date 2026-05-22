@@ -740,6 +740,12 @@ build_rv() {
 			fi
 		fi
 		rm "$stock_apk_to_patch"
+		# Save list of all compatible patches as JSON alongside the APK
+		local patches_json_output="${BUILD_DIR}/${app_name_l}-${rv_brand_f}-v${version_f}-${arch_f}.patches.json"
+		if [ -n "$list_patches" ]; then
+			python3 scripts/parse_patches.py "${args[included_patches]}" "${args[excluded_patches]}" "${args[exclusive_patches]}" <<< "$list_patches" > "$patches_json_output"
+			pr "Saved all compatible patches list to '${patches_json_output}'"
+		fi
 		if [ "$build_mode" = apk ]; then
 			if [ "${NORB:-}" != true ] || { [ ! -f "$patched_apk" ] && [ ! -f "$apk_output" ]; }; then
 				mv -f "$patched_apk" "$apk_output"

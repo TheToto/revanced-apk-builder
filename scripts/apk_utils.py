@@ -5,7 +5,7 @@ apk_utils.py — helpers for extracting metadata and icons from Android APKs.
 Requirements:
   - aapt  (from android-sdk-build-tools)
   - aapt2 (from android-sdk-build-tools)
-  - ImageMagick (magick CLI)
+  - ImageMagick (convert CLI)
 """
 
 import glob
@@ -239,6 +239,25 @@ def extract_apk_icon(apk_path: str, out_path: str) -> bool:
 
         fg_file = _find_best_image_for_res_id(fg_res_id, apk_path, aapt2)
         if not fg_file:
+            # Fallback to legacy PNG if adaptive icon foreground is not a raster image (e.g. is XML/vector)
+            lines = _dump_resources(apk_path, aapt2)
+            root_res_id = None
+            current_res_id = None
+            for line in lines:
+                if "resource 0x" in line:
+                    m = re.search(r"resource (0x[0-9a-fA-F]+)", line)
+                    if m:
+                        current_res_id = m.group(1)
+                elif icon_res_path in line and current_res_id:
+                    root_res_id = current_res_id
+                    break
+            if root_res_id:
+                legacy_file = _find_best_image_for_res_id(root_res_id, apk_path, aapt2)
+                if legacy_file:
+                    with zipfile.ZipFile(apk_path, "r") as z:
+                        with z.open(legacy_file) as zf, open(out_path, "wb") as f:
+                            f.write(zf.read())
+                    return True
             return False
 
         # Determine background
@@ -259,7 +278,7 @@ def extract_apk_icon(apk_path: str, out_path: str) -> bool:
                     with z.open(bg_file) as zf, open(bg_local, "wb") as f:
                         f.write(zf.read())
                     subprocess.run([
-                        "magick",
+                        "convert",
                         bg_local, "-resize", "432x432!", "-colorspace", "sRGB",
                         fg_local, "-resize", "432x432!",
                         "-composite", out_path
@@ -267,7 +286,7 @@ def extract_apk_icon(apk_path: str, out_path: str) -> bool:
                 else:
                     fill = bg_color or "none"  # transparent if unknown
                     subprocess.run([
-                        "magick",
+                        "convert",
                         "-size", "432x432", f"xc:{fill}",
                         fg_local, "-resize", "432x432!",
                         "-composite", out_path

@@ -6,6 +6,8 @@ parallel-jobs = 1
 
 # you can use rvmm-config-gen to generate a config
 
+# Good source for patches : https://nvbangg.github.io/awesome-for-morphe/
+
 [YouTube-Old]
 enabled = false
 build-mode = "both"
@@ -89,9 +91,9 @@ enabled = true
 apkmirror-dlurl = "https://www.apkmirror.com/apk/facebook-2/facebook/"
 uptodown-dlurl = "https://facebook.en.uptodown.com/android"
 arch = "arm64-v8a"
-patches-source = "RookieEnough/De-ReVanced"
+patches-source = "RookieEnough/De-Vanced"
 cli-source = "MorpheApp/morphe-cli"
-rv-brand = "DeReVanced"
+rv-brand = "DeVanced"
 build-mode = "apk"
 excluded-patches = "'Hide \\'Sponsored Stories\\''" # Broken
 version = "latest"
@@ -101,9 +103,9 @@ enabled = true
 apkmirror-dlurl = "https://www.apkmirror.com/apk/facebook-2/messenger/"
 uptodown-dlurl = "https://facebook-messenger.en.uptodown.com/android"
 arch = "arm64-v8a"
-patches-source = "RookieEnough/De-ReVanced"
+patches-source = "RookieEnough/De-Vanced"
 cli-source = "MorpheApp/morphe-cli"
-rv-brand = "DeReVanced"
+rv-brand = "DeVanced"
 build-mode = "apk"
 excluded-patches = "'Hide inbox ads'" # Broken
 
@@ -114,5 +116,25 @@ cli-source = "MorpheApp/morphe-cli"
 rv-brand = "Piko"
 apkmirror-dlurl = "https://www.apkmirror.com/apk/instagram/instagram-instagram/"
 uptodown-dlurl = "https://instagram.en.uptodown.com/android"
+arch = "arm64-v8a"
+build-mode = "apk"
+
+[NiagaraLauncher]
+enabled = true
+patches-source = "hoo-dles/morphe-patches"
+cli-source = "MorpheApp/morphe-cli"
+rv-brand = "hoo-dles"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/mellowdrop-studio/niagara-launcher/"
+uptodown-dlurl = "https://niagara-launcher.en.uptodown.com/android"
+arch = "arm64-v8a"
+build-mode = "apk"
+
+[ProtonVPN]
+enabled = true
+patches-source = "hoo-dles/morphe-patches"
+cli-source = "MorpheApp/morphe-cli"
+rv-brand = "hoo-dles"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/proton-technologies-ag/protonvpn-secure-and-free-vpn/"
+uptodown-dlurl = "https://protonvpn.en.uptodown.com/android"
 arch = "arm64-v8a"
 build-mode = "apk"

@@ -12,42 +12,36 @@ from apk_utils import get_package_id, extract_apk_icon
 
 # This script runs AFTER releases are built and uploaded.
 # The NEXT_VER_CODE environment variable contains the release tag.
-# GITHUB_REPOSITORY contains the repo path (e.g. j-hc/revanced-magisk-module).
+from config_utils import get_enabled_apps, get_repo_details
 
 next_ver_code = os.environ.get("NEXT_VER_CODE", "UNKNOWN_TAG")
-repo_full = os.environ.get("GITHUB_REPOSITORY", "TheToto/revanced-magisk-module")
-
-try:
-    owner, repo_name = repo_full.split('/')
-except ValueError:
-    owner, repo_name = "TheToto", "revanced-magisk-module"
+owner, repo_name = get_repo_details()
 
 base_url = "https://apk.thetoto.fr"
+
+def get_patch_status(default_enabled, explicitly_enabled, explicitly_disabled, exclusive):
+    if explicitly_disabled:
+        return "explicitly_disabled"
+    if explicitly_enabled:
+        return "explicitly_enabled"
+    if exclusive:
+        return "disabled"
+    if default_enabled:
+        return "enabled"
+    return "disabled"
 
 out_dir = "/tmp/pages"
 os.makedirs(out_dir, exist_ok=True)
 
+enabled_apps = get_enabled_apps()
+slug_to_name = {slug: info['name'] for slug, info in enabled_apps.items()}
+
 build_dir = "build"
 apks = glob.glob(os.path.join(build_dir, "*.apk"))
-
-if not apks:
-    print("No APKs found in build directory. Skipping app page generation.")
-    exit(0)
-
+built_slugs = set()
 
 for apk_path in apks:
     filename = os.path.basename(apk_path)
-    
-    slug_to_name = {}
-    try:
-        with open("config.toml", "r") as f:
-            for line in f:
-                if line.strip().startswith("[") and line.strip().endswith("]"):
-                    app_name = line.strip()[1:-1]
-                    valid_slug = app_name.lower().replace(' ', '-')
-                    slug_to_name[valid_slug] = app_name
-    except Exception:
-        pass
 
     slug = "unknown"
     for valid_slug in sorted(slug_to_name.keys(), key=len, reverse=True):
@@ -60,6 +54,7 @@ for apk_path in apks:
         slug = parts[0] if parts else "unknown"
 
     app_display_name = slug_to_name.get(slug, slug.replace('-', ' ').title())
+    built_slugs.add(slug)
 
     # Resolve Obtainium App ID (Package Name) from apk using aapt
     app_id = get_package_id(apk_path)
@@ -120,232 +115,108 @@ for apk_path in apks:
     encoded_json = urllib.parse.quote(json_str, safe='')
     obtainium_link = f"obtainium://app/{encoded_json}"
 
+    patches_json_path = apk_path.replace(".apk", ".patches.json")
+    patches_list_html = ""
+    if os.path.exists(patches_json_path):
+        try:
+            with open(patches_json_path, "r") as f:
+                patches_data = json.load(f)
+            if patches_data:
+                if isinstance(patches_data, dict):
+                    patches = patches_data.get("patches", [])
+                    exclusive = patches_data.get("exclusive", False)
+                else:
+                    patches = patches_data
+                    exclusive = False
+
+                processed_patches = []
+                applied_count = 0
+                for p in patches:
+                    name = p.get('name', '')
+                    desc = p.get('description', '') or "No description available."
+                    if desc.strip().lower() == "null" or not desc:
+                        desc = "No description available."
+                    default_enabled = p.get('default_enabled', False)
+                    if isinstance(default_enabled, str):
+                        default_enabled = default_enabled.lower() == "true"
+                    explicitly_enabled = p.get('explicitly_enabled', False)
+                    if isinstance(explicitly_enabled, str):
+                        explicitly_enabled = explicitly_enabled.lower() == "true"
+                    explicitly_disabled = p.get('explicitly_disabled', False)
+                    if isinstance(explicitly_disabled, str):
+                        explicitly_disabled = explicitly_disabled.lower() == "true"
+                    
+                    status = get_patch_status(default_enabled, explicitly_enabled, explicitly_disabled, exclusive)
+                    if status in ("explicitly_enabled", "enabled"):
+                        applied_count += 1
+                        
+                    processed_patches.append({
+                        "name": name,
+                        "description": desc,
+                        "status": status,
+                        "default_enabled": default_enabled
+                    })
+                
+                status_order = {
+                    "explicitly_disabled": 0,
+                    "explicitly_enabled": 1,
+                    "enabled": 2,
+                    "disabled": 3
+                }
+                processed_patches.sort(key=lambda x: (status_order.get(x["status"], 4), x["name"].lower()))
+
+                patches_list_html += f"""
+        <div class="patches-section">
+            <h3 class="patches-title">⚙️ Applied Patches ({applied_count}/{len(processed_patches)})</h3>
+            <div class="patches-list">
+"""
+                for p in processed_patches:
+                    status = p["status"]
+                    status_class = {
+                        "explicitly_disabled": "excluded",
+                        "explicitly_enabled": "applied",
+                        "enabled": "applied",
+                        "disabled": "disabled"
+                    }.get(status, "disabled")
+
+                    if status == "explicitly_disabled":
+                        status_label = "Explicitly Disabled"
+                    elif status == "explicitly_enabled":
+                        if p["default_enabled"]:
+                            status_label = "Explicitly Enabled (Default)"
+                        else:
+                            status_label = "Explicitly Enabled (Not Default)"
+                    elif status == "enabled":
+                        status_label = "Enabled"
+                    else:
+                        status_label = "Disabled"
+                    
+                    patches_list_html += f"""
+                <div class="patch-card {status_class}">
+                    <div class="patch-header">
+                        <span class="patch-name">{p['name']}</span>
+                        <span class="patch-status status-{status_class}">{status_label}</span>
+                    </div>
+                    <div class="patch-desc">{p['description']}</div>
+                </div>
+"""
+                patches_list_html += """
+            </div>
+        </div>
+"""
+        except Exception as e:
+            print(f"Warning: could not read/process patches file for {filename}: {e}")
+
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download {app_display_name}</title>
-    <style>
-        :root {{
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --border: #334155;
-            --obtainium-color: #10b981;
-            --obtainium-hover: #059669;
-        }}
-        * {{ box-sizing: border-box; }}
-        body {{
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }}
-        .container {{
-            max-width: 600px;
-            width: 100%;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 3rem 2rem;
-            text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-        }}
-        .back-link {{
-            display: inline-flex;
-            align-items: center;
-            color: var(--text-secondary);
-            text-decoration: none;
-            margin-bottom: 2rem;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }}
-        .back-link:hover {{
-            color: var(--text-primary);
-        }}
-        .header-content {{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }}
-        .app-icon-wrap {{
-            width: 72px;
-            height: 72px;
-            border-radius: 16px;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-        }}
-        .app-icon {{
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            transform: scale(1.35);
-        }}
-        h1 {{
-            margin: 0;
-            font-size: 2.2rem;
-            text-transform: capitalize;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }}
-        .info-grid {{
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 2.5rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }}
-        .info-item {{
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }}
-        .info-label {{
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 0.05em;
-        }}
-        .info-value {{
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }}
-        .filename-raw {{
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            word-break: break-all;
-            background: rgba(0,0,0,0.2);
-            padding: 0.5rem;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }}
-        .actions {{
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 1rem 0.75rem;
-            width: 100%;
-            max-width: 270px;
-            margin: 0 auto;
-            align-items: center;
-        }}
-        .actions > a {{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 52px;
-            width: 100%;
-        }}
-        .btn {{
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }}
-        .btn-download {{
-            background-color: var(--accent);
-            color: #fff;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
-        }}
-        .btn-download:hover {{
-            background-color: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
-        }}
-        .badge-obtainium {{
-            display: inline-block;
-            transition: transform 0.2s ease;
-        }}
-        .badge-obtainium:hover {{
-            transform: translateY(-2px) scale(1.02);
-        }}
-        .badge-obtainium img {{
-            height: 52px;
-            width: 100%;
-            max-width: 170px;
-            object-fit: contain;
-            border-radius: 8px;
-        }}
-        .btn-qr {{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            padding: 0;
-            width: 52px;
-            height: 52px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }}
-        .btn-qr:hover {{
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }}
-        .modal-overlay {{
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }}
-        .modal-overlay.active {{ display: flex; }}
-        .modal-content {{
-            background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            text-align: center;
-            position: relative;
-            max-width: 90%;
-            animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }}
-        @keyframes modalFadeIn {{
-            from {{ opacity: 0; transform: translateY(20px) scale(0.95); }}
-            to {{ opacity: 1; transform: translateY(0) scale(1); }}
-        }}
-        .modal-close {{
-            position: absolute;
-            top: 1rem; right: 1rem;
-            background: none; border: none;
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            line-height: 1;
-            padding: 0.5rem;
-        }}
-        .modal-close:hover {{ color: var(--text-primary); }}
-    </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
-<body>
-    <div class="container">
+<body class="app-page">
+    <div class="container app-container">
         <a href="index.html" class="back-link">← Back to Apps List</a>
         <div class="header-content">
             <div class="app-icon-wrap">
@@ -416,6 +287,7 @@ for apk_path in apks:
                 </svg>
             </button>
         </div>
+        {patches_list_html}
     </div>
 
     <div class="modal-overlay" id="qr-modal-apk" onclick="if(event.target === this) this.classList.remove('active')">
@@ -441,5 +313,16 @@ for apk_path in apks:
         f.write(html_content)
     
     print(f"Generated {slug}.html for {filename}")
+
+print("App pages generation complete.")
+
+
+# Copy style.css to pages output directory
+import shutil
+css_source = os.path.join(os.path.dirname(__file__), "style.css")
+css_dest = os.path.join(out_dir, "style.css")
+if os.path.exists(css_source):
+    shutil.copy2(css_source, css_dest)
+    print("Copied style.css to pages directory.")
 
 print("App pages generation complete.")
