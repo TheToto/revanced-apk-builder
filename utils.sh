@@ -592,8 +592,8 @@ patch_lspatch() {
 	out_dir=$(dirname "$patched_apk")
 
 	local cmd="java -jar '$lspatch_jar' '$stock_input' -k ks-p12.keystore 123456789 jhc 123456789 -m '$module_apk' -o '$out_dir'"
-	pr "$cmd"
-	if eval "$cmd"; then
+	eval "$cmd" 2>&1 | sed '/ManifestTagVisitor/d'
+	if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 		local lspatched_file
 		lspatched_file=$(find "$out_dir" -name "*-lspatched.apk" | head -1)
 		if [ -f "$lspatched_file" ]; then
@@ -621,7 +621,7 @@ check_sig() {
 }
 
 build_rv() {
-	local list_patches=""
+	local list_patches="" get_latest_ver=false
 	eval "declare -A args=${1#*=}"
 	local version="" pkg_name=""
 	local mode_arg=${args[build_mode]} version_mode=${args[version]}
@@ -668,7 +668,7 @@ build_rv() {
 		fi
 	else
 		list_patches=$(patches_list "$cli_jar" "$patches_jar" "$pkg_name") || return 1
-		local get_latest_ver=false
+		get_latest_ver=false
 		if [ "$version_mode" = auto ]; then
 			if ! version=$(get_patch_last_supported_ver "$list_patches" "$pkg_name" \
 				"${args[included_patches]}" "${args[excluded_patches]}" "${args[exclusive_patches]}"); then
