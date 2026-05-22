@@ -12,7 +12,7 @@ from apk_utils import get_package_id, extract_apk_icon
 
 # This script runs AFTER releases are built and uploaded.
 # The NEXT_VER_CODE environment variable contains the release tag.
-from config_utils import get_enabled_apps, get_repo_details
+from config_utils import get_enabled_apps, get_repo_details, QR_SVG
 
 next_ver_code = os.environ.get("NEXT_VER_CODE", "UNKNOWN_TAG")
 owner, repo_name = get_repo_details()
@@ -251,40 +251,14 @@ for apk_path in apks:
         <div class="actions">
             <a href="{download_url}" class="btn btn-download">Download APK</a>
             <button class="btn-qr" onclick="document.getElementById('qr-modal-apk').classList.add('active')" title="Show APK QR Code">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect width="5" height="5" x="3" y="3" rx="1"/>
-                    <rect width="5" height="5" x="16" y="3" rx="1"/>
-                    <rect width="5" height="5" x="3" y="16" rx="1"/>
-                    <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
-                    <path d="M21 21v.01"/>
-                    <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
-                    <path d="M3 12h.01"/>
-                    <path d="M12 3h.01"/>
-                    <path d="M12 16v.01"/>
-                    <path d="M16 12h1"/>
-                    <path d="M21 12v.01"/>
-                    <path d="M12 21v-1"/>
-                </svg>
+                {QR_SVG}
             </button>
 
             <a href="{obtainium_link}" class="badge-obtainium">
                 <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium">
             </a>
             <button class="btn-qr" onclick="document.getElementById('qr-modal-obt').classList.add('active')" title="Show Obtainium QR Code">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect width="5" height="5" x="3" y="3" rx="1"/>
-                    <rect width="5" height="5" x="16" y="3" rx="1"/>
-                    <rect width="5" height="5" x="3" y="16" rx="1"/>
-                    <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
-                    <path d="M21 21v.01"/>
-                    <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
-                    <path d="M3 12h.01"/>
-                    <path d="M12 3h.01"/>
-                    <path d="M12 16v.01"/>
-                    <path d="M16 12h1"/>
-                    <path d="M21 12v.01"/>
-                    <path d="M12 21v-1"/>
-                </svg>
+                {QR_SVG}
             </button>
         </div>
         {patches_list_html}

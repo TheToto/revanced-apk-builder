@@ -39,3 +39,17 @@ def get_repo_details():
     except ValueError:
         owner, repo_name = "TheToto", "revanced-magisk-module"
     return owner, repo_name
+
+def load_svg(filename):
+    """
+    Loads SVG content from the scripts directory.
+    """
+    path = os.path.join(os.path.dirname(__file__), filename)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except Exception as e:
+        print(f"Warning: Failed to load SVG {filename}: {e}")
+        return ""
+
+QR_SVG = load_svg("qr.svg")

@@ -132,28 +132,34 @@ h1 {
     transform: scale(1.35);
 }
 
-/* MicroG Section */
-.microg-section {
+/* MicroG & Obtainium Sections */
+.microg-section, .obtainium-section {
     margin-bottom: 3rem;
     background-color: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 2rem;
     text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.microg-section h2 {
+.microg-section:hover, .obtainium-section:hover {
+    border-color: var(--accent);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.2);
+}
+
+.microg-section h2, .obtainium-section h2 {
     margin: 0 0 1rem 0;
     font-size: 1.5rem;
 }
 
-.microg-section p {
+.microg-section p, .obtainium-section p {
     color: var(--text-secondary);
     margin: 0 0 1.5rem 0;
     line-height: 1.6;
 }
 
-.microg-actions {
+.microg-actions, .obtainium-actions {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 1rem 0.75rem;
@@ -163,12 +169,40 @@ h1 {
     align-items: center;
 }
 
-.microg-actions > a {
+.microg-actions > a, .obtainium-actions > a {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 52px;
     width: 100%;
+}
+
+/* Tools Grid Layout */
+.tools-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.tools-grid .microg-section,
+.tools-grid .obtainium-section {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.tools-grid .microg-section p,
+.tools-grid .obtainium-section p {
+    flex-grow: 1;
+}
+
+@media (max-width: 768px) {
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* App Page Header & Icons */
