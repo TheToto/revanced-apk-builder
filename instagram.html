@@ -22,8 +22,8 @@
                 <span class="info-value">v426.0.0.37.68</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Brand</span>
-                <span class="info-value" style="text-transform: capitalize;">piko</span>
+                <span class="info-label">Patch Source</span>
+                <span class="info-value"><a href="https://github.com/crimera/piko" class="brand-link" target="_blank" rel="noopener">Piko</a></span>
             </div>
             <div class="info-item">
                 <span class="info-label">Architecture</span>
@@ -40,7 +40,7 @@
         </div>
         
         <div class="actions">
-            <a href="https://apk.thetoto.fr/releases/download/21/instagram-piko-v426.0.0.37.68-arm64-v8a.apk" class="btn btn-download">Download APK</a>
+            <a href="https://apk.thetoto.fr/releases/download/22/instagram-piko-v426.0.0.37.68-arm64-v8a.apk" class="btn btn-download">Download APK</a>
             <button class="btn-qr" onclick="document.getElementById('qr-modal-apk').classList.add('active')" title="Show APK QR Code">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <rect width="5" height="5" x="3" y="3" rx="1"/>
@@ -58,7 +58,7 @@
 </svg>
             </button>
 
-            <a href="obtainium://app/%7B%22id%22%3A%20%22com.instagram.android%22%2C%20%22url%22%3A%20%22https%3A%2F%2Fapk.thetoto.fr%2Finstagram.html%22%2C%20%22author%22%3A%20%22TheToto%22%2C%20%22name%22%3A%20%22Instagram%22%2C%20%22preferredApkIndex%22%3A%200%2C%20%22additionalSettings%22%3A%20%22%7B%5C%22versionExtractionRegEx%5C%22%3A%20%5C%22-v%28%5B0-9a-zA-Z.-%5D%2B%29-%28arm64-v8a%7Carm-v7a%7Cx86_64%7Cx86%7Call%29%5C%5C%5C%5C.apk%5C%22%2C%20%5C%22matchGroupToUse%5C%22%3A%20%5C%22%241%5C%22%2C%20%5C%22defaultPseudoVersioningMethod%5C%22%3A%20%5C%22APKLinkHash%5C%22%2C%20%5C%22appName%5C%22%3A%20%5C%22Instagram%5C%22%2C%20%5C%22appAuthor%5C%22%3A%20%5C%22TheToto%5C%22%2C%20%5C%22about%5C%22%3A%20%5C%22Instagram%20piko%5C%22%7D%22%7D" class="badge-obtainium">
+            <a href="obtainium://app/%7B%22id%22%3A%20%22com.instagram.android%22%2C%20%22url%22%3A%20%22https%3A%2F%2Fapk.thetoto.fr%2Finstagram.html%22%2C%20%22author%22%3A%20%22TheToto%22%2C%20%22name%22%3A%20%22Instagram%22%2C%20%22preferredApkIndex%22%3A%200%2C%20%22additionalSettings%22%3A%20%22%7B%5C%22versionExtractionRegEx%5C%22%3A%20%5C%22-v%28%5B0-9a-zA-Z.-%5D%2B%29-%28arm64-v8a%7Carm-v7a%7Cx86_64%7Cx86%7Call%29%5C%5C%5C%5C.apk%5C%22%2C%20%5C%22matchGroupToUse%5C%22%3A%20%5C%22%241%5C%22%2C%20%5C%22defaultPseudoVersioningMethod%5C%22%3A%20%5C%22APKLinkHash%5C%22%2C%20%5C%22appName%5C%22%3A%20%5C%22Instagram%5C%22%2C%20%5C%22appAuthor%5C%22%3A%20%5C%22TheToto%5C%22%2C%20%5C%22about%5C%22%3A%20%5C%22Instagram%20Piko%5C%22%7D%22%7D" class="badge-obtainium">
                 <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium">
             </a>
             <button class="btn-qr" onclick="document.getElementById('qr-modal-obt').classList.add('active')" title="Show Obtainium QR Code">
@@ -454,13 +454,17 @@
             </div>
         </div>
 
+        
+        <footer>
+            <p>Source code and CI on GitHub: <a href="https://github.com/TheToto/revanced-apk-builder" target="_blank" rel="noopener">TheToto/revanced-apk-builder</a></p>
+        </footer>
     </div>
 
     <div class="modal-overlay" id="qr-modal-apk" onclick="if(event.target === this) this.classList.remove('active')">
         <div class="modal-content">
             <button class="modal-close" onclick="document.getElementById('qr-modal-apk').classList.remove('active')">&times;</button>
             <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to Download APK</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=https%3A%2F%2Fapk.thetoto.fr%2Freleases%2Fdownload%2F21%2Finstagram-piko-v426.0.0.37.68-arm64-v8a.apk" alt="APK QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=https%3A%2F%2Fapk.thetoto.fr%2Freleases%2Fdownload%2F22%2Finstagram-piko-v426.0.0.37.68-arm64-v8a.apk" alt="APK QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
         </div>
     </div>
 
@@ -468,7 +472,7 @@
         <div class="modal-content">
             <button class="modal-close" onclick="document.getElementById('qr-modal-obt').classList.remove('active')">&times;</button>
             <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to add in Obtainium</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2520%2522com.instagram.android%2522%252C%2520%2522url%2522%253A%2520%2522https%253A%252F%252Fapk.thetoto.fr%252Finstagram.html%2522%252C%2520%2522author%2522%253A%2520%2522TheToto%2522%252C%2520%2522name%2522%253A%2520%2522Instagram%2522%252C%2520%2522preferredApkIndex%2522%253A%25200%252C%2520%2522additionalSettings%2522%253A%2520%2522%257B%255C%2522versionExtractionRegEx%255C%2522%253A%2520%255C%2522-v%2528%255B0-9a-zA-Z.-%255D%252B%2529-%2528arm64-v8a%257Carm-v7a%257Cx86_64%257Cx86%257Call%2529%255C%255C%255C%255C.apk%255C%2522%252C%2520%255C%2522matchGroupToUse%255C%2522%253A%2520%255C%2522%25241%255C%2522%252C%2520%255C%2522defaultPseudoVersioningMethod%255C%2522%253A%2520%255C%2522APKLinkHash%255C%2522%252C%2520%255C%2522appName%255C%2522%253A%2520%255C%2522Instagram%255C%2522%252C%2520%255C%2522appAuthor%255C%2522%253A%2520%255C%2522TheToto%255C%2522%252C%2520%255C%2522about%255C%2522%253A%2520%255C%2522Instagram%2520piko%255C%2522%257D%2522%257D" alt="Obtainium QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2520%2522com.instagram.android%2522%252C%2520%2522url%2522%253A%2520%2522https%253A%252F%252Fapk.thetoto.fr%252Finstagram.html%2522%252C%2520%2522author%2522%253A%2520%2522TheToto%2522%252C%2520%2522name%2522%253A%2520%2522Instagram%2522%252C%2520%2522preferredApkIndex%2522%253A%25200%252C%2520%2522additionalSettings%2522%253A%2520%2522%257B%255C%2522versionExtractionRegEx%255C%2522%253A%2520%255C%2522-v%2528%255B0-9a-zA-Z.-%255D%252B%2529-%2528arm64-v8a%257Carm-v7a%257Cx86_64%257Cx86%257Call%2529%255C%255C%255C%255C.apk%255C%2522%252C%2520%255C%2522matchGroupToUse%255C%2522%253A%2520%255C%2522%25241%255C%2522%252C%2520%255C%2522defaultPseudoVersioningMethod%255C%2522%253A%2520%255C%2522APKLinkHash%255C%2522%252C%2520%255C%2522appName%255C%2522%253A%2520%255C%2522Instagram%255C%2522%252C%2520%255C%2522appAuthor%255C%2522%253A%2520%255C%2522TheToto%255C%2522%252C%2520%255C%2522about%255C%2522%253A%2520%255C%2522Instagram%2520Piko%255C%2522%257D%2522%257D" alt="Obtainium QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
         </div>
     </div>
 </body>
