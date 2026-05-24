@@ -52,7 +52,10 @@ abort() {
 	kill -- -$$ 2>/dev/null
 	exit 1
 }
-java() { env -i PATH="$PATH" java --enable-native-access=ALL-UNNAMED "$@"; }
+java() { 
+	pr "Java version: $(command java -version 2>&1 | head -1)"
+	command java --enable-native-access=ALL-UNNAMED "$@"
+}
 
 get_prebuilts() {
 	local cli_src=$1 cli_ver=$2 patches_src=$3 patches_ver=$4
@@ -260,6 +263,9 @@ _req() {
 	if [ -n "${FLARESOLVERR_URL:-}" ] && [ "$op" = - ]; then
 		case "$ip" in
 			*apkmirror.com*)
+				if [ -z "${FLARESOLVERR_URL:-}" ]; then
+					wpr "FLARESOLVERR_URL is not set. APKMirror is Cloudflare-protected and downloads will likely fail without FlareSolverr."
+				fi
 				_req_fs "$ip" "$op"
 				return
 				;;
@@ -459,10 +465,34 @@ dl_apkmirror() {
 	fi
 
 	if [ "$arch" = "arm-v7a" ]; then arch="armeabi-v7a"; fi
-	local resp node app_table apkmname dlurl=""
-	apkmname=$($HTMLQ "h1.marginZero" --text <<<"$__APKMIRROR_RESP__")
-	apkmname="${apkmname,,}" apkmname="${apkmname// /-}" apkmname="${apkmname//[^a-z0-9-]/}"
-	url="${url}/${apkmname}-${version//./-}-release/"
+	local resp node app_table dlurl=""
+
+	# Convert version to URL slug: "329.13 - Stable" -> "329-13-stable"
+	local version_slug
+	version_slug=$(echo "${version}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g;s/-\+/-/g;s/^-//;s/-$//')
+
+	# Find the exact release URL from the uploads page (handles DMCA'd/renamed apps)
+	local release_url="" uploads_resp
+	uploads_resp="${__APKMIRROR_UPLOADS_RESP__:-}"
+	if [ -z "$uploads_resp" ]; then
+		uploads_resp=$(req "https://www.apkmirror.com/uploads/?appcategory=${__APKMIRROR_CAT__}" -) || :
+	fi
+	if [ -n "$uploads_resp" ]; then
+		release_url=$(grep -o 'href="[^"#]*'"${version_slug}"'-release/"' <<<"$uploads_resp" | head -1 | sed 's/href="//;s/"$//')
+	fi
+
+	if [ -n "$release_url" ]; then
+		url="https://www.apkmirror.com${release_url}"
+		pr "dl_apkmirror: release URL: $url"
+	else
+		# Fallback: construct URL from app name (may fail if app is DMCA'd)
+		local apkmname
+		apkmname=$($HTMLQ "h1.marginZero" --text <<<"$__APKMIRROR_RESP__")
+		apkmname="${apkmname,,}" apkmname="${apkmname// /-}" apkmname="${apkmname//[^a-z0-9-]/}"
+		apkmname=$(echo "$apkmname" | sed 's/-\+/-/g')
+		wpr "dl_apkmirror: could not find release URL in uploads page, falling back to constructed URL"
+		url="${url}/${apkmname}-${version_slug}-release/"
+	fi
 	resp=$(req "$url" -) || return 1
 	node=$($HTMLQ "div.table-row.headerFont:nth-last-child(1)" -r "span:nth-child(n+3)" <<<"$resp")
 	if [ "$node" ]; then
@@ -478,7 +508,9 @@ dl_apkmirror() {
 		resp=$(req "$dlurl" -)
 	fi
 	url=$(echo "$resp" | $HTMLQ --base https://www.apkmirror.com --attribute href "a.btn") || return 1
+	if [ -z "$url" ]; then epr "dl_apkmirror: could not find download button (a.btn) in page"; return 1; fi
 	url=$(req "$url" - | $HTMLQ --base https://www.apkmirror.com --attribute href "span > a[rel = nofollow]") || return 1
+	if [ -z "$url" ]; then epr "dl_apkmirror: could not find final download link (span > a[rel=nofollow]) in page"; return 1; fi
 
 	if [ "$is_bundle" = true ]; then
 		req "$url" "${output}.apkm" || return 1
@@ -490,6 +522,7 @@ dl_apkmirror() {
 get_apkmirror_vers() {
 	local vers apkm_resp
 	apkm_resp=$(req "https://www.apkmirror.com/uploads/?appcategory=${__APKMIRROR_CAT__}" -)
+	__APKMIRROR_UPLOADS_RESP__="$apkm_resp" # cache for dl_apkmirror URL lookup
 	vers=$(sed -n 's;.*Version:</span><span class="infoSlide-value">\(.*\) </span>.*;\1;p' <<<"$apkm_resp" | awk '{$1=$1}1')
 	if [ "$__AAV__" = false ]; then
 		local IFS=$'\n'
