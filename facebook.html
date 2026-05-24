@@ -4,226 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download Facebook</title>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --border: #334155;
-            --obtainium-color: #10b981;
-            --obtainium-hover: #059669;
-        }
-        * { box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 3rem 2rem;
-            text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-        }
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            color: var(--text-secondary);
-            text-decoration: none;
-            margin-bottom: 2rem;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-        .back-link:hover {
-            color: var(--text-primary);
-        }
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .app-icon-wrap {
-            width: 72px;
-            height: 72px;
-            border-radius: 16px;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-        }
-        .app-icon {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            transform: scale(1.35);
-        }
-        h1 {
-            margin: 0;
-            font-size: 2.2rem;
-            text-transform: capitalize;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 2.5rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .info-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .info-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 0.05em;
-        }
-        .info-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        .filename-raw {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            word-break: break-all;
-            background: rgba(0,0,0,0.2);
-            padding: 0.5rem;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }
-        .actions {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 1rem 0.75rem;
-            width: 100%;
-            max-width: 270px;
-            margin: 0 auto;
-            align-items: center;
-        }
-        .actions > a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 52px;
-            width: 100%;
-        }
-        .btn {
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-        .btn-download {
-            background-color: var(--accent);
-            color: #fff;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
-        }
-        .btn-download:hover {
-            background-color: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
-        }
-        .badge-obtainium {
-            display: inline-block;
-            transition: transform 0.2s ease;
-        }
-        .badge-obtainium:hover {
-            transform: translateY(-2px) scale(1.02);
-        }
-        .badge-obtainium img {
-            height: 52px;
-            width: 100%;
-            max-width: 170px;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-        .btn-qr {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            padding: 0;
-            width: 52px;
-            height: 52px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-qr:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-content {
-            background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            text-align: center;
-            position: relative;
-            max-width: 90%;
-            animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .modal-close {
-            position: absolute;
-            top: 1rem; right: 1rem;
-            background: none; border: none;
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            line-height: 1;
-            padding: 0.5rem;
-        }
-        .modal-close:hover { color: var(--text-primary); }
-    </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
-<body>
-    <div class="container">
+<body class="app-page">
+    <div class="container app-container">
         <a href="index.html" class="back-link">← Back to Apps List</a>
         <div class="header-content">
             <div class="app-icon-wrap">
@@ -235,11 +19,11 @@
         <div class="info-grid">
             <div class="info-item">
                 <span class="info-label">Version</span>
-                <span class="info-value">v561.0.0.42.67</span>
+                <span class="info-value">v562.0.0.51.73</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Brand</span>
-                <span class="info-value" style="text-transform: capitalize;">derevanced</span>
+                <span class="info-label">Patch Source</span>
+                <span class="info-value">LSPatch: <a href="https://github.com/gnadgnaoh/NexAlloy" class="brand-link" target="_blank" rel="noopener">gnadgnaoh</a></span>
             </div>
             <div class="info-item">
                 <span class="info-label">Architecture</span>
@@ -252,55 +36,75 @@
         </div>
         
         <div class="filename-raw">
-            File: <code>facebook-derevanced-v561.0.0.42.67-arm64-v8a.apk</code>
+            File: <code>facebook-gnadgnaoh-v562.0.0.51.73-arm64-v8a.apk</code>
         </div>
         
         <div class="actions">
-            <a href="https://apk.thetoto.fr/releases/download/17/facebook-derevanced-v561.0.0.42.67-arm64-v8a.apk" class="btn btn-download">Download APK</a>
+            <a href="https://apk.thetoto.fr/releases/download/23/facebook-gnadgnaoh-v562.0.0.51.73-arm64-v8a.apk" class="btn btn-download">Download APK</a>
             <button class="btn-qr" onclick="document.getElementById('qr-modal-apk').classList.add('active')" title="Show APK QR Code">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect width="5" height="5" x="3" y="3" rx="1"/>
-                    <rect width="5" height="5" x="16" y="3" rx="1"/>
-                    <rect width="5" height="5" x="3" y="16" rx="1"/>
-                    <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
-                    <path d="M21 21v.01"/>
-                    <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
-                    <path d="M3 12h.01"/>
-                    <path d="M12 3h.01"/>
-                    <path d="M12 16v.01"/>
-                    <path d="M16 12h1"/>
-                    <path d="M21 12v.01"/>
-                    <path d="M12 21v-1"/>
-                </svg>
+    <rect width="5" height="5" x="3" y="3" rx="1"/>
+    <rect width="5" height="5" x="16" y="3" rx="1"/>
+    <rect width="5" height="5" x="3" y="16" rx="1"/>
+    <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
+    <path d="M21 21v.01"/>
+    <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
+    <path d="M3 12h.01"/>
+    <path d="M12 3h.01"/>
+    <path d="M12 16v.01"/>
+    <path d="M16 12h1"/>
+    <path d="M21 12v.01"/>
+    <path d="M12 21v-1"/>
+</svg>
             </button>
 
-            <a href="obtainium://app/%7B%22id%22%3A%20%22com.facebook.katana%22%2C%20%22url%22%3A%20%22https%3A%2F%2Fapk.thetoto.fr%2Ffacebook.html%22%2C%20%22author%22%3A%20%22TheToto%22%2C%20%22name%22%3A%20%22Facebook%22%2C%20%22preferredApkIndex%22%3A%200%2C%20%22additionalSettings%22%3A%20%22%7B%5C%22versionExtractionRegEx%5C%22%3A%20%5C%22-v%28%5B0-9a-zA-Z.-%5D%2B%29-%28arm64-v8a%7Carm-v7a%7Cx86_64%7Cx86%7Call%29%5C%5C%5C%5C.apk%5C%22%2C%20%5C%22matchGroupToUse%5C%22%3A%20%5C%22%241%5C%22%2C%20%5C%22defaultPseudoVersioningMethod%5C%22%3A%20%5C%22APKLinkHash%5C%22%2C%20%5C%22appName%5C%22%3A%20%5C%22Facebook%5C%22%2C%20%5C%22appAuthor%5C%22%3A%20%5C%22TheToto%5C%22%2C%20%5C%22about%5C%22%3A%20%5C%22Facebook%20derevanced%5C%22%7D%22%7D" class="badge-obtainium">
+            <a href="obtainium://app/%7B%22id%22%3A%20%22com.facebook.katana%22%2C%20%22url%22%3A%20%22https%3A%2F%2Fapk.thetoto.fr%2Ffacebook.html%22%2C%20%22author%22%3A%20%22TheToto%22%2C%20%22name%22%3A%20%22Facebook%22%2C%20%22preferredApkIndex%22%3A%200%2C%20%22additionalSettings%22%3A%20%22%7B%5C%22versionExtractionRegEx%5C%22%3A%20%5C%22-v%28%5B0-9a-zA-Z.-%5D%2B%29-%28arm64-v8a%7Carm-v7a%7Cx86_64%7Cx86%7Call%29%5C%5C%5C%5C.apk%5C%22%2C%20%5C%22matchGroupToUse%5C%22%3A%20%5C%22%241%5C%22%2C%20%5C%22defaultPseudoVersioningMethod%5C%22%3A%20%5C%22APKLinkHash%5C%22%2C%20%5C%22appName%5C%22%3A%20%5C%22Facebook%5C%22%2C%20%5C%22appAuthor%5C%22%3A%20%5C%22TheToto%5C%22%2C%20%5C%22about%5C%22%3A%20%5C%22Facebook%20gnadgnaoh%5C%22%7D%22%7D" class="badge-obtainium">
                 <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium">
             </a>
             <button class="btn-qr" onclick="document.getElementById('qr-modal-obt').classList.add('active')" title="Show Obtainium QR Code">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect width="5" height="5" x="3" y="3" rx="1"/>
-                    <rect width="5" height="5" x="16" y="3" rx="1"/>
-                    <rect width="5" height="5" x="3" y="16" rx="1"/>
-                    <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
-                    <path d="M21 21v.01"/>
-                    <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
-                    <path d="M3 12h.01"/>
-                    <path d="M12 3h.01"/>
-                    <path d="M12 16v.01"/>
-                    <path d="M16 12h1"/>
-                    <path d="M21 12v.01"/>
-                    <path d="M12 21v-1"/>
-                </svg>
+    <rect width="5" height="5" x="3" y="3" rx="1"/>
+    <rect width="5" height="5" x="16" y="3" rx="1"/>
+    <rect width="5" height="5" x="3" y="16" rx="1"/>
+    <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
+    <path d="M21 21v.01"/>
+    <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
+    <path d="M3 12h.01"/>
+    <path d="M12 3h.01"/>
+    <path d="M12 16v.01"/>
+    <path d="M16 12h1"/>
+    <path d="M21 12v.01"/>
+    <path d="M12 21v-1"/>
+</svg>
             </button>
         </div>
+        
+        <div class="patches-section">
+            <h3 class="patches-title">⚙️ Applied Patches (1/1)</h3>
+            <div class="patches-list">
+
+                <div class="patch-card applied">
+                    <div class="patch-header">
+                        <span class="patch-name">Xposed Module Injection</span>
+                        <span class="patch-status status-applied">Explicitly Enabled (Default)</span>
+                    </div>
+                    <div class="patch-desc">Injected gnadgnaoh-NexAlloy-latest.apk module into the APK via LSPatch.</div>
+                </div>
+
+            </div>
+        </div>
+
+        
+        <footer>
+            <p>Source code and CI on GitHub: <a href="https://github.com/TheToto/revanced-apk-builder" target="_blank" rel="noopener">TheToto/revanced-apk-builder</a></p>
+        </footer>
     </div>
 
     <div class="modal-overlay" id="qr-modal-apk" onclick="if(event.target === this) this.classList.remove('active')">
         <div class="modal-content">
             <button class="modal-close" onclick="document.getElementById('qr-modal-apk').classList.remove('active')">&times;</button>
             <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to Download APK</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=https%3A%2F%2Fapk.thetoto.fr%2Freleases%2Fdownload%2F17%2Ffacebook-derevanced-v561.0.0.42.67-arm64-v8a.apk" alt="APK QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=https%3A%2F%2Fapk.thetoto.fr%2Freleases%2Fdownload%2F23%2Ffacebook-gnadgnaoh-v562.0.0.51.73-arm64-v8a.apk" alt="APK QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
         </div>
     </div>
 
@@ -308,7 +112,7 @@
         <div class="modal-content">
             <button class="modal-close" onclick="document.getElementById('qr-modal-obt').classList.remove('active')">&times;</button>
             <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to add in Obtainium</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2520%2522com.facebook.katana%2522%252C%2520%2522url%2522%253A%2520%2522https%253A%252F%252Fapk.thetoto.fr%252Ffacebook.html%2522%252C%2520%2522author%2522%253A%2520%2522TheToto%2522%252C%2520%2522name%2522%253A%2520%2522Facebook%2522%252C%2520%2522preferredApkIndex%2522%253A%25200%252C%2520%2522additionalSettings%2522%253A%2520%2522%257B%255C%2522versionExtractionRegEx%255C%2522%253A%2520%255C%2522-v%2528%255B0-9a-zA-Z.-%255D%252B%2529-%2528arm64-v8a%257Carm-v7a%257Cx86_64%257Cx86%257Call%2529%255C%255C%255C%255C.apk%255C%2522%252C%2520%255C%2522matchGroupToUse%255C%2522%253A%2520%255C%2522%25241%255C%2522%252C%2520%255C%2522defaultPseudoVersioningMethod%255C%2522%253A%2520%255C%2522APKLinkHash%255C%2522%252C%2520%255C%2522appName%255C%2522%253A%2520%255C%2522Facebook%255C%2522%252C%2520%255C%2522appAuthor%255C%2522%253A%2520%255C%2522TheToto%255C%2522%252C%2520%255C%2522about%255C%2522%253A%2520%255C%2522Facebook%2520derevanced%255C%2522%257D%2522%257D" alt="Obtainium QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2520%2522com.facebook.katana%2522%252C%2520%2522url%2522%253A%2520%2522https%253A%252F%252Fapk.thetoto.fr%252Ffacebook.html%2522%252C%2520%2522author%2522%253A%2520%2522TheToto%2522%252C%2520%2522name%2522%253A%2520%2522Facebook%2522%252C%2520%2522preferredApkIndex%2522%253A%25200%252C%2520%2522additionalSettings%2522%253A%2520%2522%257B%255C%2522versionExtractionRegEx%255C%2522%253A%2520%255C%2522-v%2528%255B0-9a-zA-Z.-%255D%252B%2529-%2528arm64-v8a%257Carm-v7a%257Cx86_64%257Cx86%257Call%2529%255C%255C%255C%255C.apk%255C%2522%252C%2520%255C%2522matchGroupToUse%255C%2522%253A%2520%255C%2522%25241%255C%2522%252C%2520%255C%2522defaultPseudoVersioningMethod%255C%2522%253A%2520%255C%2522APKLinkHash%255C%2522%252C%2520%255C%2522appName%255C%2522%253A%2520%255C%2522Facebook%255C%2522%252C%2520%255C%2522appAuthor%255C%2522%253A%2520%255C%2522TheToto%255C%2522%252C%2520%255C%2522about%255C%2522%253A%2520%255C%2522Facebook%2520gnadgnaoh%255C%2522%257D%2522%257D" alt="Obtainium QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
         </div>
     </div>
 </body>
