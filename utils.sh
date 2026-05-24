@@ -210,6 +210,40 @@ config_update() {
 	fi
 }
 
+_req_fs() {
+	local url="$1" op="$2"
+	local max_retries=5
+	local attempt
+	for attempt in $(seq 1 $max_retries); do
+		local response
+		local payload
+		payload=$(jq -n --arg url "$url" '{"cmd": "request.get", "url": $url, "maxTimeout": 60000}')
+		
+		if ! response=$(curl -s -X POST -H "Content-Type: application/json" -d "$payload" "$FLARESOLVERR_URL"); then
+			epr "Failed to connect to FlareSolverr at $FLARESOLVERR_URL (attempt $attempt/$max_retries)"
+			sleep 2
+			continue
+		fi
+
+		local status
+		status=$(jq -r '.status // empty' <<<"$response")
+		if [ "$status" = "ok" ]; then
+			local html
+			html=$(jq -r '.solution.response // empty' <<<"$response")
+			if [ "$op" = - ]; then
+				echo "$html"
+			else
+				echo "$html" > "$op"
+			fi
+			return 0
+		fi
+		epr "[!] FlareSolverr attempt $attempt/$max_retries failed: $url"
+		sleep 2
+	done
+	epr "[-] FlareSolverr failed after $max_retries attempts: $url"
+	return 1
+}
+
 _req() {
 	local ip="$1" op="$2"
 	shift 2
@@ -222,6 +256,16 @@ _req() {
 			return
 		fi
 	fi
+
+	if [ -n "${FLARESOLVERR_URL:-}" ] && [ "$op" = - ]; then
+		case "$ip" in
+			*apkmirror.com*)
+				_req_fs "$ip" "$op"
+				return
+				;;
+		esac
+	fi
+
 	if ! curl -L --compressed -c "$TEMP_DIR/cookie.txt" -b "$TEMP_DIR/cookie.txt" --connect-timeout 10 --retry 1 --fail -s -S "$@" "$ip" -o "$dlp"; then
 		epr "Request failed: $ip"
 		return 1
@@ -644,7 +688,7 @@ build_rv() {
 	else
 		for dl_p in "${DL_SRCS[@]}"; do
 			if [ -z "${args[${dl_p}_dlurl]}" ]; then continue; fi
-			if ! get_${dl_p}_resp "${args[${dl_p}_dlurl]}" || ! pkg_name=$(get_"${dl_p}"_pkg_name); then
+			if ! get_${dl_p}_resp "${args[${dl_p}_dlurl]}" || ! pkg_name=$(get_"${dl_p}"_pkg_name) || [ -z "$pkg_name" ]; then
 				args[${dl_p}_dlurl]=""
 				epr "ERROR: Could not find ${table} in ${dl_p}"
 				continue
@@ -663,6 +707,7 @@ build_rv() {
 	if [ "${args[patch_method]}" = "lspatch" ]; then
 		version=$version_mode
 		if [ "$version" = "latest" ] || [ "$version" = "auto" ]; then
+			__AAV__="false"
 			pkgvers=$(get_"${dl_from}"_vers)
 			version=$(get_highest_ver <<<"$pkgvers") || version=$(head -1 <<<"$pkgvers")
 		fi
