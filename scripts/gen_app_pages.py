@@ -114,7 +114,12 @@ for apk_path in apks:
     app_info = enabled_apps.get(slug, {})
     brand = app_info.get("brand", brand_extracted)
     patches_src = app_info.get("patches-source", "ReVanced/revanced-patches")
-    brand_link = patches_src if (patches_src.startswith("http://") or patches_src.startswith("https://")) else f"https://github.com/{patches_src}"
+    if patches_src.startswith("http://") or patches_src.startswith("https://"):
+        brand_link = patches_src
+    elif patches_src.startswith("codeberg.org/"):
+        brand_link = f"https://{patches_src}"
+    else:
+        brand_link = f"https://github.com/{patches_src}"
 
     app_config = app_info.get("config", {})
     patch_method = app_config.get("patch-method", "revanced").strip().lower()
@@ -253,8 +258,8 @@ for apk_path in apks:
         info_card_html = f"""
         <div class="info-card">
             <div class="info-card-header">
-                <span class="info-card-icon">ℹ️</span>
-                <span class="info-card-title">Important Information</span>
+                <span class="info-card-icon">⚠️</span>
+                <span class="info-card-title">Warning</span>
             </div>
             <div class="info-card-content">{info_html}</div>
         </div>

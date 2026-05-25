@@ -657,9 +657,9 @@ footer a:hover {
 
 /* Info Card */
 .info-card {
-    background: rgba(59, 130, 246, 0.05);
-    border: 1px solid rgba(59, 130, 246, 0.15);
-    border-left: 4px solid var(--accent);
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    border-left: 4px solid #f59e0b;
     border-radius: 12px;
     padding: 1.25rem 1.5rem;
     text-align: left;
@@ -680,7 +680,7 @@ footer a:hover {
 .info-card-title {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: #fbbf24;
 }
 
 .info-card-content {
@@ -690,12 +690,12 @@ footer a:hover {
 }
 
 .info-card-content a {
-    color: var(--accent);
+    color: #fbbf24;
     text-decoration: none;
     font-weight: 500;
 }
 
 .info-card-content a:hover {
     text-decoration: underline;
-    color: #60a5fa;
+    color: #f59e0b;
 }
