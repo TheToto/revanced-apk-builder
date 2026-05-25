@@ -5,7 +5,7 @@ CWD=$(pwd)
 TEMP_DIR="temp"
 BIN_DIR="bin"
 BUILD_DIR="build"
-DL_SRCS=("direct" "archive" "apkmirror" "uptodown")
+DL_SRCS=("direct" "archive" "apkmirror" "uptodown" "discord")
 
 if [ "${GITHUB_TOKEN-}" ]; then GH_HEADER="Authorization: token ${GITHUB_TOKEN}"; else GH_HEADER=; fi
 NEXT_VER_CODE=${NEXT_VER_CODE:-$(date +'%Y%m%d')}
@@ -213,40 +213,6 @@ config_update() {
 	fi
 }
 
-_req_fs() {
-	local url="$1" op="$2"
-	local max_retries=5
-	local attempt
-	for attempt in $(seq 1 $max_retries); do
-		local response
-		local payload
-		payload=$(jq -n --arg url "$url" '{"cmd": "request.get", "url": $url, "maxTimeout": 60000}')
-		
-		if ! response=$(curl -s -X POST -H "Content-Type: application/json" -d "$payload" "$FLARESOLVERR_URL"); then
-			epr "Failed to connect to FlareSolverr at $FLARESOLVERR_URL (attempt $attempt/$max_retries)"
-			sleep 2
-			continue
-		fi
-
-		local status
-		status=$(jq -r '.status // empty' <<<"$response")
-		if [ "$status" = "ok" ]; then
-			local html
-			html=$(jq -r '.solution.response // empty' <<<"$response")
-			if [ "$op" = - ]; then
-				echo "$html"
-			else
-				echo "$html" > "$op"
-			fi
-			return 0
-		fi
-		epr "[!] FlareSolverr attempt $attempt/$max_retries failed: $url"
-		sleep 2
-	done
-	epr "[-] FlareSolverr failed after $max_retries attempts: $url"
-	return 1
-}
-
 _req() {
 	local ip="$1" op="$2"
 	shift 2
@@ -258,18 +224,6 @@ _req() {
 			while [ -f "$dlp" ]; do sleep 1; done
 			return
 		fi
-	fi
-
-	if [ -n "${FLARESOLVERR_URL:-}" ] && [ "$op" = - ]; then
-		case "$ip" in
-			*apkmirror.com*)
-				if [ -z "${FLARESOLVERR_URL:-}" ]; then
-					wpr "FLARESOLVERR_URL is not set. APKMirror is Cloudflare-protected and downloads will likely fail without FlareSolverr."
-				fi
-				_req_fs "$ip" "$op"
-				return
-				;;
-		esac
 	fi
 
 	if ! curl -L --compressed -c "$TEMP_DIR/cookie.txt" -b "$TEMP_DIR/cookie.txt" --connect-timeout 10 --retry 1 --fail -s -S "$@" "$ip" -o "$dlp"; then
@@ -290,15 +244,25 @@ gh_dl() {
 }
 dl_github_release_asset() {
 	local repo=$1 tag=$2 pattern=$3 dest=$4 log_tag=${5-}
-	local rel_url="https://api.github.com/repos/${repo}/releases"
-	if [ "$tag" = "latest" ]; then
-		rel_url+="/latest"
+	local rel_url resp
+	if [[ "$repo" == *"codeberg.org"* ]]; then
+		local clean_repo="${repo#*codeberg.org/}"
+		rel_url="https://codeberg.org/api/v1/repos/${clean_repo}/releases"
+		if [ "$tag" = "latest" ]; then
+			rel_url+="/latest"
+		else
+			rel_url+="/tags/${tag}"
+		fi
+		resp=$(req "$rel_url" -) || return 1
 	else
-		rel_url+="/tags/${tag}"
+		rel_url="https://api.github.com/repos/${repo}/releases"
+		if [ "$tag" = "latest" ]; then
+			rel_url+="/latest"
+		else
+			rel_url+="/tags/${tag}"
+		fi
+		resp=$(gh_req "$rel_url" -) || return 1
 	fi
-
-	local resp
-	resp=$(gh_req "$rel_url" -) || return 1
 
 	local download_url asset_name
 	download_url=$(jq -r --arg pat "$pattern" '.assets[] | select(.name | test($pat)) | .browser_download_url' <<<"$resp" | head -1)
@@ -307,8 +271,17 @@ dl_github_release_asset() {
 		epr "No asset matching pattern '$pattern' found in ${repo} (${tag})"
 		return 1
 	fi
-	gh_dl "$dest" "$download_url"
+	
+	if [[ "$repo" == *"codeberg.org"* ]]; then
+		req "$download_url" "$dest"
+	else
+		gh_dl "$dest" "$download_url"
+	fi
+
 	if [ -n "$log_tag" ]; then
+		if [[ "$repo" == *"codeberg.org"* ]]; then
+			repo="${repo#*codeberg.org/}"
+		fi
 		local cl_dir="${TEMP_DIR}/${repo%%/*}"
 		mkdir -p "$cl_dir"
 		echo "${log_tag}: $(cut -d/ -f1 <<<"$repo")/${asset_name}  " >>"${cl_dir}/changelog.md"
@@ -465,34 +438,10 @@ dl_apkmirror() {
 	fi
 
 	if [ "$arch" = "arm-v7a" ]; then arch="armeabi-v7a"; fi
-	local resp node app_table dlurl=""
-
-	# Convert version to URL slug: "329.13 - Stable" -> "329-13-stable"
-	local version_slug
-	version_slug=$(echo "${version}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g;s/-\+/-/g;s/^-//;s/-$//')
-
-	# Find the exact release URL from the uploads page (handles DMCA'd/renamed apps)
-	local release_url="" uploads_resp
-	uploads_resp="${__APKMIRROR_UPLOADS_RESP__:-}"
-	if [ -z "$uploads_resp" ]; then
-		uploads_resp=$(req "https://www.apkmirror.com/uploads/?appcategory=${__APKMIRROR_CAT__}" -) || :
-	fi
-	if [ -n "$uploads_resp" ]; then
-		release_url=$(grep -o 'href="[^"#]*'"${version_slug}"'-release/"' <<<"$uploads_resp" | head -1 | sed 's/href="//;s/"$//')
-	fi
-
-	if [ -n "$release_url" ]; then
-		url="https://www.apkmirror.com${release_url}"
-		pr "dl_apkmirror: release URL: $url"
-	else
-		# Fallback: construct URL from app name (may fail if app is DMCA'd)
-		local apkmname
-		apkmname=$($HTMLQ "h1.marginZero" --text <<<"$__APKMIRROR_RESP__")
-		apkmname="${apkmname,,}" apkmname="${apkmname// /-}" apkmname="${apkmname//[^a-z0-9-]/}"
-		apkmname=$(echo "$apkmname" | sed 's/-\+/-/g')
-		wpr "dl_apkmirror: could not find release URL in uploads page, falling back to constructed URL"
-		url="${url}/${apkmname}-${version_slug}-release/"
-	fi
+	local resp node app_table apkmname dlurl=""
+	apkmname=$($HTMLQ "h1.marginZero" --text <<<"$__APKMIRROR_RESP__")
+	apkmname="${apkmname,,}" apkmname="${apkmname// /-}" apkmname="${apkmname//[^a-z0-9-]/}"
+	url="${url}/${apkmname}-${version//./-}-release/"
 	resp=$(req "$url" -) || return 1
 	node=$($HTMLQ "div.table-row.headerFont:nth-last-child(1)" -r "span:nth-child(n+3)" <<<"$resp")
 	if [ "$node" ]; then
@@ -508,9 +457,7 @@ dl_apkmirror() {
 		resp=$(req "$dlurl" -)
 	fi
 	url=$(echo "$resp" | $HTMLQ --base https://www.apkmirror.com --attribute href "a.btn") || return 1
-	if [ -z "$url" ]; then epr "dl_apkmirror: could not find download button (a.btn) in page"; return 1; fi
 	url=$(req "$url" - | $HTMLQ --base https://www.apkmirror.com --attribute href "span > a[rel = nofollow]") || return 1
-	if [ -z "$url" ]; then epr "dl_apkmirror: could not find final download link (span > a[rel=nofollow]) in page"; return 1; fi
 
 	if [ "$is_bundle" = true ]; then
 		req "$url" "${output}.apkm" || return 1
@@ -522,7 +469,6 @@ dl_apkmirror() {
 get_apkmirror_vers() {
 	local vers apkm_resp
 	apkm_resp=$(req "https://www.apkmirror.com/uploads/?appcategory=${__APKMIRROR_CAT__}" -)
-	__APKMIRROR_UPLOADS_RESP__="$apkm_resp" # cache for dl_apkmirror URL lookup
 	vers=$(sed -n 's;.*Version:</span><span class="infoSlide-value">\(.*\) </span>.*;\1;p' <<<"$apkm_resp" | awk '{$1=$1}1')
 	if [ "$__AAV__" = false ]; then
 		local IFS=$'\n'
@@ -540,6 +486,119 @@ get_apkmirror_pkg_name() { sed -n 's;.*id=\(.*\)" class="accent_color.*;\1;p' <<
 get_apkmirror_resp() {
 	__APKMIRROR_RESP__=$(req "${1}" -) || return 1
 	__APKMIRROR_CAT__="${1##*/}"
+}
+
+# -------------------- discord --------------------
+get_discord_resp() {
+	__DISCORD_RESP__=$1
+}
+get_discord_pkg_name() {
+	echo "com.discord"
+}
+to_discord_version_code() {
+	local ver=$1
+	# If it's already a 6-digit number, return as is
+	if [[ "$ver" =~ ^[0-9]{6}$ ]]; then
+		echo "$ver"
+		return
+	fi
+
+	# Parse major, minor, and type
+	local major minor type=0
+	# Remove any leading 'v'
+	ver=${ver#v}
+
+	# Check for alpha/beta indicators
+	if [[ "${ver,,}" =~ beta|b ]]; then
+		type=1
+	elif [[ "${ver,,}" =~ alpha|a ]]; then
+		type=2
+	fi
+
+	# Extract digits and dots/dashes
+	local clean_ver
+	clean_ver=$(echo "$ver" | tr -cd '0-9.-')
+	# Split by dot
+	IFS='.' read -r major minor <<< "$clean_ver"
+	# Remove any trailing dashes or non-digits from minor
+	minor=$(echo "$minor" | tr -cd '0-9')
+
+	# Format as XXXYZZ
+	local minor_pad
+	minor_pad=$(printf "%02d" $((10#$minor)))
+	
+	echo "${major}${type}${minor_pad}"
+}
+get_discord_vers() {
+	local resolved=""
+	if [ "${version_mode:-}" = "latest" ]; then
+		resolved=$(curl -s "https://tracker.vendetta.rocks/tracker/index" | jq -r '.latest.stable // empty' 2>/dev/null || true)
+	else
+		resolved=$(curl -s "https://codeberg.org/raincord/ControlRepo/raw/branch/main/control.json" | jq -r '.[0].discord // empty' 2>/dev/null || true)
+		if [ -z "$resolved" ]; then
+			resolved=$(curl -s "https://tracker.vendetta.rocks/tracker/index" | jq -r '.latest.stable // empty' 2>/dev/null || true)
+		fi
+	fi
+	if [[ "$resolved" =~ ^[0-9]{6}$ ]]; then
+		local major=$((10#$resolved / 1000))
+		local minor=$((10#$resolved % 100))
+		local type=$(((10#$resolved / 100) % 10))
+		local suffix=""
+		if [ "$type" -eq 1 ]; then
+			suffix="-beta"
+		elif [ "$type" -eq 2 ]; then
+			suffix="-alpha"
+		fi
+		resolved="${major}.${minor}${suffix}"
+	fi
+	echo "$resolved"
+}
+dl_discord() {
+	local url=$1 version=$2 output=$3 arch=$4 dpi=$5
+	if [ -z "$version" ] || [ "$version" = "latest" ] || [ "$version" = "auto" ]; then
+		version_mode="$version"
+		version=$(get_discord_vers)
+	fi
+	if [ -z "$version" ]; then
+		epr "dl_discord: Could not resolve Discord version"
+		return 1
+	fi
+
+	local version_code
+	version_code=$(to_discord_version_code "$version")
+
+	pr "dl_discord: Downloading Discord (version: $version, code: $version_code, arch: $arch)..."
+	local tracker_arch
+	case "$arch" in
+		arm64-v8a) tracker_arch="arm64_v8a" ;;
+		armeabi-v7a|arm-v7a) tracker_arch="armeabi_v7a" ;;
+		x86) tracker_arch="x86" ;;
+		x86_64) tracker_arch="x86_64" ;;
+		*) tracker_arch="arm64_v8a" ;;
+	esac
+
+	local split_dir="$TEMP_DIR/discord_splits_${version_code}"
+	rm -rf "$split_dir"
+	mkdir -p "$split_dir"
+
+	local base_url="https://tracker.vendetta.rocks/tracker/download/$version_code"
+
+	req "$base_url/base" "$split_dir/base.apk" || return 1
+	req "$base_url/config.xxhdpi" "$split_dir/config.xxhdpi.apk" || return 1
+	req "$base_url/config.en" "$split_dir/config.en.apk" || return 1
+	req "$base_url/config.${tracker_arch}" "$split_dir/config.${tracker_arch}.apk" || return 1
+
+	local apkm_file="$TEMP_DIR/discord_${version_code}.apkm"
+	(cd "$split_dir" && zip -q -r "../$(basename "$apkm_file")" .)
+	rm -rf "$split_dir"
+
+	if ! merge_splits "$apkm_file" "$output"; then
+		epr "dl_discord: Failed to merge split APKs."
+		rm -f "$apkm_file"
+		return 1
+	fi
+	rm -f "$apkm_file"
+	return 0
 }
 
 # -------------------- uptodown --------------------

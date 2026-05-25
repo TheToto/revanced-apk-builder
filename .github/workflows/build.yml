@@ -13,8 +13,6 @@ jobs:
   run:
     permissions: write-all
     runs-on: ubuntu-latest
-    env:
-      FLARESOLVERR_URL: http://localhost:8191/v1
     steps:
       - uses: actions/setup-java@v5
         with:
@@ -29,17 +27,6 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-
-      - name: Start FlareSolverr
-        run: |
-          docker run -d \
-            --name=flaresolverr \
-            -p 8191:8191 \
-            -e LOG_LEVEL=info \
-            -e CAPTCHA_SOLVER=none \
-            flaresolverr/flaresolverr:latest
-          # Wait for FlareSolverr to be ready
-          timeout 60 sh -c 'until curl -s http://localhost:8191/ > /dev/null; do sleep 1; done'
 
       - name: Update config
         if: ${{ inputs.from_ci }}
