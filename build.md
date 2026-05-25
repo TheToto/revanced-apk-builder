@@ -1,6 +1,5 @@
-Facebook: 562.0.0.51.73  
+Discord: 320.12  
 Instagram: 426.0.0.37.68  
-Messenger: 562.0.0.53.83  
 Music: 8.47.56  
 NiagaraLauncher: 1.16.4  
 ProtonVPN: 5.17.72.0  
@@ -17,12 +16,10 @@ CLI: MorpheApp/morphe-cli-1.8.1-all.jar
 Patches: crimera/patches-3.4.0.mpp  
 [Changelog](https://github.com/crimera/piko/releases/tag/v3.4.0)
 
-Patches: gnadgnaoh/NexAlloy-nonroot-release-v1.0.apk  
-Patches: gnadgnaoh/NexAlloy-nonroot-release-v1.0.apk  
 Patches: hoo-dles/patches-1.33.0.mpp  
 [Changelog](https://github.com/hoo-dles/morphe-patches/releases/tag/v1.33.0)
 
 Patches: MorpheApp/patches-1.29.0.mpp  
 [Changelog](https://github.com/MorpheApp/morphe-patches/releases/tag/v1.29.0)
 
-Patches: revenge-mod/app-release.apk    
+Patches: raincord/app-release.apk    

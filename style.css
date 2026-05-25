@@ -654,3 +654,48 @@ footer a:hover {
     color: #60a5fa;
     text-decoration: underline;
 }
+
+/* Info Card */
+.info-card {
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    border-left: 4px solid #f59e0b;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.info-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.info-card-icon {
+    font-size: 1.1rem;
+}
+
+.info-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fbbf24;
+}
+
+.info-card-content {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.info-card-content a {
+    color: #fbbf24;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.info-card-content a:hover {
+    text-decoration: underline;
+    color: #f59e0b;
+}
