@@ -8,13 +8,6 @@ parallel-jobs = 1
 
 # Good source for patches : https://nvbangg.github.io/awesome-for-morphe/
 
-[YouTube-Old]
-enabled = false
-build-mode = "both"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube"
-uptodown-dlurl = "https://youtube.en.uptodown.com/android"
-archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.youtube"
-
 [YouTube]
 enabled = true
 app-name = "YouTube"
@@ -22,18 +15,9 @@ patches-source = "MorpheApp/morphe-patches"
 cli-source = "MorpheApp/morphe-cli"
 rv-brand = "Morphe"
 build-mode = "apk"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube"
 uptodown-dlurl = "https://youtube.en.uptodown.com/android"
 archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.youtube"
 excluded-patches = "'Custom branding'"
-
-[Music-Old]
-enabled = false
-build-mode = "both"
-arch = "both"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube-music"
-uptodown-dlurl = "https://youtube-music.en.uptodown.com/android"
-archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.apps.youtube.music"
 
 [Music]
 enabled = true
@@ -43,7 +27,6 @@ cli-source = "MorpheApp/morphe-cli"
 rv-brand = "Morphe"
 build-mode = "apk"
 arch = "arm64-v8a"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube-music"
 uptodown-dlurl = "https://youtube-music.en.uptodown.com/android"
 archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.apps.youtube.music"
 excluded-patches = "'Custom branding'"
@@ -55,7 +38,6 @@ rv-brand = "Morphe"
 build-mode = "apk"
 patches-source = "MorpheApp/morphe-patches"
 cli-source = "MorpheApp/morphe-cli"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/redditinc/reddit/"
 archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.reddit.frontpage"
 uptodown-dlurl = "https://reddit-official-app.en.uptodown.com/android"
 dpi = "120-640dpi"
@@ -65,7 +47,6 @@ enabled = true
 patches-source = "crimera/piko"
 cli-source = "MorpheApp/morphe-cli"
 rv-brand = "Piko"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/x-corp/twitter/"
 archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.twitter.android"
 build-mode = "apk"
 version = "11.81.0-release.0"
@@ -75,33 +56,27 @@ include-stock = "split"
 enabled = false
 build-mode = "both"
 arch = "both"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/photos/"
 uptodown-dlurl = "https://google-photos.en.uptodown.com/android"
 archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.apps.photos"
 
 [Twitch]
 enabled = false
-apkmirror-dlurl = "https://www.apkmirror.com/apk/twitch-interactive-inc/twitch/"
 uptodown-dlurl = "https://twitch.en.uptodown.com/android"
-
-#### Added by this fork
 
 [Facebook]
 enabled = true
-patch-method = "lspatch"
-patches-source = "gnadgnaoh/NexAlloy"
-xposed-module-asset = "NexAlloy-nonroot-release.*\\.apk"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/facebook-2/facebook/"
+patches-source = "RookieEnough/De-Vanced"
+cli-source = "MorpheApp/morphe-cli"
+rv-brand = "DeVanced"
 uptodown-dlurl = "https://facebook.en.uptodown.com/android"
 arch = "arm64-v8a"
 build-mode = "apk"
 
 [Messenger]
 enabled = true
-patch-method = "lspatch"
-patches-source = "gnadgnaoh/NexAlloy"
-xposed-module-asset = "NexAlloy-nonroot-release.*\\.apk"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/facebook-2/messenger/"
+patches-source = "RookieEnough/De-Vanced"
+cli-source = "MorpheApp/morphe-cli"
+rv-brand = "DeVanced"
 uptodown-dlurl = "https://facebook-messenger.en.uptodown.com/android"
 arch = "arm64-v8a"
 build-mode = "apk"
@@ -111,7 +86,6 @@ enabled = true
 patches-source = "crimera/piko"
 cli-source = "MorpheApp/morphe-cli"
 rv-brand = "Piko"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/instagram/instagram-instagram/"
 uptodown-dlurl = "https://instagram.en.uptodown.com/android"
 arch = "arm64-v8a"
 build-mode = "apk"
@@ -121,24 +95,23 @@ enabled = true
 patches-source = "hoo-dles/morphe-patches"
 cli-source = "MorpheApp/morphe-cli"
 rv-brand = "hoo-dles"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/mellowdrop-studio/niagara-launcher/"
 uptodown-dlurl = "https://niagara-launcher.en.uptodown.com/android"
 arch = "arm64-v8a"
 build-mode = "apk"
+info = "Note: You may encounter this bug: https://github.com/hoo-dles/morphe-patches/issues/429"
 
 [ProtonVPN]
 enabled = true
 patches-source = "hoo-dles/morphe-patches"
 cli-source = "MorpheApp/morphe-cli"
 rv-brand = "hoo-dles"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/proton-technologies-ag/protonvpn-secure-and-free-vpn/"
 uptodown-dlurl = "https://protonvpn.en.uptodown.com/android"
 arch = "arm64-v8a"
 build-mode = "apk"
 
 [Discord]
 enabled = true
-rv-brand = "Rain"
+rv-brand = "Raincord"
 patch-method = "lspatch"
 patches-source = "codeberg.org/raincord/rainXposed"
 xposed-module-asset = "app-release\\.apk"

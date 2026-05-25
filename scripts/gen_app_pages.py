@@ -240,6 +240,26 @@ for apk_path in apks:
         except Exception as e:
             print(f"Warning: could not read/process patches file for {filename}: {e}")
 
+    info_text = app_config.get("info", "").strip()
+    info_card_html = ""
+    if info_text:
+        # Convert URLs to clickable links
+        info_html = re.sub(
+            r'(https?://[^\s<]+[^.\s<])',
+            r'<a href="\1" target="_blank" rel="noopener">\1</a>',
+            info_text
+        )
+        info_html = info_html.replace("\n", "<br>")
+        info_card_html = f"""
+        <div class="info-card">
+            <div class="info-card-header">
+                <span class="info-card-icon">ℹ️</span>
+                <span class="info-card-title">Important Information</span>
+            </div>
+            <div class="info-card-content">{info_html}</div>
+        </div>
+"""
+
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -276,6 +296,8 @@ for apk_path in apks:
                 <span class="info-value" style="font-size: 0.9rem; word-break: break-all;">{app_id}</span>
             </div>
         </div>
+        
+        {info_card_html}
         
         <div class="filename-raw">
             File: <code>{filename}</code>
