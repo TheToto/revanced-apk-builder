@@ -32,6 +32,7 @@ DEF_PATCHES_VER=$(toml_get "$main_config_t" patches-version) || DEF_PATCHES_VER=
 DEF_CLI_VER=$(toml_get "$main_config_t" cli-version) || DEF_CLI_VER="latest"
 DEF_PATCHES_SRC=$(toml_get "$main_config_t" patches-source) || DEF_PATCHES_SRC="ReVanced/revanced-patches"
 DEF_CLI_SRC=$(toml_get "$main_config_t" cli-source) || DEF_CLI_SRC="ReVanced/revanced-cli"
+DEF_RV_BRAND=$(toml_get "$main_config_t" rv-brand) || DEF_RV_BRAND=""
 mkdir -p "$TEMP_DIR" "$BUILD_DIR"
 
 if [ "${2-}" = "--config-update" ]; then
@@ -101,12 +102,12 @@ while read -r table_name; do
 			epr "Could not get prebuilts"
 			continue
 		fi
-		read -r cli_jar patches_jar <<<"$PREBUILTS"
+		read -r patches_jar cli_jar <<<"$PREBUILTS"
 		app_args[cli]=$cli_jar
 		app_args[ptjar]=$patches_jar
 	fi
 	if ! app_args[rv_brand]=$(toml_get "$t" rv-brand); then
-		app_args[rv_brand]="${patches_src%%/*}"
+		app_args[rv_brand]=${DEF_RV_BRAND:-"${patches_src%%/*}"}
 	fi
 	app_args[excluded_patches]=$(toml_get "$t" excluded-patches) || app_args[excluded_patches]=""
 	if [ -n "${app_args[excluded_patches]}" ] && [[ ${app_args[excluded_patches]} != *'"'* ]]; then abort "patch names inside excluded-patches must be quoted"; fi
@@ -177,7 +178,7 @@ while read -r table_name; do
 	fi
 done < <(toml_get_table_names)
 wait
-rm -rf temp/tmp.*
+_clean_tmp
 if [ -z "$(ls -A1 "${BUILD_DIR}")" ]; then abort "All builds failed."; fi
 
 log "\nInstall [Microg](https://github.com/ReVanced/GmsCore/releases) for non-root YouTube and YT Music APKs"
