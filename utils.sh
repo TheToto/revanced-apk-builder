@@ -286,6 +286,13 @@ dl_github_release_asset() {
 		gh_dl "$dest" "$download_url"
 	fi
 
+	local rel_tag
+	rel_tag=$(jq -r '.tag_name // empty' <<<"$resp")
+	if [ -n "$rel_tag" ]; then
+		rel_tag="${rel_tag#v}"
+		echo "$rel_tag" > "${dest}.ver"
+	fi
+
 	if [ -n "$log_tag" ]; then
 		if [[ "$repo" == *"codeberg.org"* ]]; then
 			repo="${repo#*codeberg.org/}"
@@ -945,7 +952,31 @@ build_rv() {
 			fi
 		fi
 
-		local apk_output="${BUILD_DIR}/${app_name_l}-${rv_brand_f}-v${version_f}-${arch_f}.apk"
+		local patches_ver=""
+		if [ "${args[patch_method]}" = "lspatch" ]; then
+			local mod_ver=""
+			if [ -n "${args[module_apk]-}" ] && [ -f "${args[module_apk]}.ver" ]; then
+				mod_ver=$(cat "${args[module_apk]}.ver" 2>/dev/null || :)
+			fi
+			if [ -n "$mod_ver" ]; then
+				patches_ver="lsp${mod_ver}"
+			else
+				patches_ver="lsp"
+			fi
+		elif [ -n "${args[ptjar]-}" ]; then
+			patches_ver="${args[ptjar]##*-}"
+			patches_ver="${patches_ver%.jar}"
+			patches_ver="${patches_ver#v}"
+		fi
+
+		local full_version_f="${version_f}"
+		if [ "${args[patch_method]}" = "lspatch" ]; then
+			full_version_f="${version_f}-${patches_ver}"
+		elif [ -n "$patches_ver" ]; then
+			full_version_f="${version_f}-p${patches_ver}"
+		fi
+
+		local apk_output="${BUILD_DIR}/${app_name_l}-${rv_brand_f}-v${full_version_f}-${arch_f}.apk"
 		if [ "${NORB:-}" != true ] || { [ ! -f "$patched_apk" ] && [ ! -f "$apk_output" ]; }; then
 			if [ "${args[patch_method]}" = "lspatch" ]; then
 				if ! patch_lspatch "$stock_apk_to_patch" "$patched_apk" "${args[lspatch_jar]}" "${args[module_apk]}"; then
@@ -961,7 +992,7 @@ build_rv() {
 		fi
 		rm "$stock_apk_to_patch"
 		# Save list of all compatible patches as JSON alongside the APK
-		local patches_json_output="${BUILD_DIR}/${app_name_l}-${rv_brand_f}-v${version_f}-${arch_f}.patches.json"
+		local patches_json_output="${BUILD_DIR}/${app_name_l}-${rv_brand_f}-v${full_version_f}-${arch_f}.patches.json"
 		if [ "${args[patch_method]}" = "lspatch" ]; then
 			echo "{\"exclusive\": false, \"patches\": [{\"name\": \"Xposed Module Injection\", \"description\": \"Injected $(basename "${args[module_apk]}") module into the APK via LSPatch.\", \"default_enabled\": true, \"explicitly_enabled\": true, \"explicitly_disabled\": false}]}" > "$patches_json_output"
 		elif [ -n "$list_patches" ]; then
@@ -982,23 +1013,17 @@ build_rv() {
 		cp -a $MODULE_TEMPLATE_DIR/. "$base_template"
 		local upj="${table,,}-update.json"
 
-		module_config "$base_template" "$pkg_name" "$version" "$arch"
+		module_config "$base_template" "$pkg_name" "$full_version_f" "$arch"
 
-		local patches_ver=""
-		if [ "${args[patch_method]}" = "lspatch" ]; then
-			patches_ver="lspatch"
-		else
-			patches_ver="${patches_jar##*-}"
-		fi
 		module_prop \
 			"${args[module_prop_name]}" \
 			"${app_name} ${args[rv_brand]}" \
-			"${version} (patches ${patches_ver})" \
+			"${full_version_f}" \
 			"${app_name} ${args[rv_brand]} module" \
 			"https://raw.githubusercontent.com/${GITHUB_REPOSITORY-}/update/${upj}" \
 			"$base_template"
 
-		local module_output="${app_name_l}-${rv_brand_f}-module-v${version_f}-${arch_f}.zip"
+		local module_output="${app_name_l}-${rv_brand_f}-module-v${full_version_f}-${arch_f}.zip"
 		pr "Packing module ${table}"
 		cp -f "$patched_apk" "${base_template}/base.apk"
 
