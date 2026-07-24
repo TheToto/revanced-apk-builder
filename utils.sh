@@ -187,17 +187,41 @@ config_update() {
 		if [ "$enabled" = "false" ]; then continue; fi
 		PATCHES_SRC=$(toml_get "$t" patches-source) || PATCHES_SRC=$DEF_PATCHES_SRC
 		PATCHES_VER=$(toml_get "$t" patches-version) || PATCHES_VER=$DEF_PATCHES_VER
+		CLI_SRC=$(toml_get "$t" cli-source) || CLI_SRC=$DEF_CLI_SRC
+		CLI_VER=$(toml_get "$t" cli-version) || CLI_VER=$DEF_CLI_VER
+		patch_method=$(toml_get "$t" patch-method) || patch_method="revanced"
+
+		local patch_updated=false
 		if [[ -v sources["$PATCHES_SRC/$PATCHES_VER"] ]]; then
-			if [ "${sources["$PATCHES_SRC/$PATCHES_VER"]}" = 1 ]; then upped+=("$table_name"); fi
+			if [ "${sources["$PATCHES_SRC/$PATCHES_VER"]}" = 1 ]; then patch_updated=true; fi
 		else
 			sources["$PATCHES_SRC/$PATCHES_VER"]=0
-			local rv_rel="https://api.github.com/repos/${PATCHES_SRC}/releases"
-			if [ "$PATCHES_VER" = "dev" ]; then
-				last_patches=$(gh_req "$rv_rel" - | jq -e -r '.[0]') || continue
-			elif [ "$PATCHES_VER" = "latest" ]; then
-				last_patches=$(gh_req "$rv_rel/latest" -) || continue
+			local rv_rel
+			if [[ "$PATCHES_SRC" == *"codeberg.org"* ]]; then
+				local clean_repo="${PATCHES_SRC#*codeberg.org/}"
+				rv_rel="https://codeberg.org/api/v1/repos/${clean_repo}/releases"
 			else
-				last_patches=$(gh_req "$rv_rel/tags/${PATCHES_VER}" -) || continue
+				rv_rel="https://api.github.com/repos/${PATCHES_SRC}/releases"
+			fi
+
+			if [ "$PATCHES_VER" = "dev" ]; then
+				if [[ "$PATCHES_SRC" == *"codeberg.org"* ]]; then
+					last_patches=$(req "$rv_rel" - | jq -e -r '.[0]') || continue
+				else
+					last_patches=$(gh_req "$rv_rel" - | jq -e -r '.[0]') || continue
+				fi
+			elif [ "$PATCHES_VER" = "latest" ]; then
+				if [[ "$PATCHES_SRC" == *"codeberg.org"* ]]; then
+					last_patches=$(req "$rv_rel/latest" -) || continue
+				else
+					last_patches=$(gh_req "$rv_rel/latest" -) || continue
+				fi
+			else
+				if [[ "$PATCHES_SRC" == *"codeberg.org"* ]]; then
+					last_patches=$(req "$rv_rel/tags/${PATCHES_VER}" -) || continue
+				else
+					last_patches=$(gh_req "$rv_rel/tags/${PATCHES_VER}" -) || continue
+				fi
 			fi
 			if ! last_patches=$(jq -e -r '.assets[] | select(.name | (endswith("asc") or endswith("json")) | not) | .name' <<<"$last_patches"); then
 				abort "config_update error: '$last_patches'"
@@ -205,12 +229,52 @@ config_update() {
 			if [ "$last_patches" ]; then
 				if ! OP=$(grep "^Patches: ${PATCHES_SRC%%/*}/" build.md | grep -m1 "$last_patches"); then
 					sources["$PATCHES_SRC/$PATCHES_VER"]=1
-					prcfg=true
-					upped+=("$table_name")
+					patch_updated=true
 				else
 					echo "$OP" >>"$TEMP_DIR"/skipped
 				fi
 			fi
+		fi
+
+		local app_updated=false
+		local target_ver=""
+		version_mode=$(toml_get "$t" version) || version_mode="auto"
+		if [ "$patch_method" != "lspatch" ]; then
+			if PREBUILTS="$(get_prebuilts "$CLI_SRC" "$CLI_VER" "$PATCHES_SRC" "$PATCHES_VER" 2>/dev/null)"; then
+				read -r patches_jar cli_jar <<<"$PREBUILTS"
+				pkg_name=$(toml_get "$t" pkg-name) || pkg_name=""
+				if [ -z "$pkg_name" ]; then
+					for dl_from in "${DL_SRCS[@]}"; do
+						if dlurl=$(toml_get "$t" "${dl_from}-dlurl"); then
+							get_${dl_from}_resp "${dlurl}" >/dev/null 2>&1 || continue
+							pkg_name=$(get_${dl_from}_pkg_name)
+							if [ "$pkg_name" ]; then break; fi
+						fi
+					done
+				fi
+				if [ "$pkg_name" ]; then
+					list_patches=$(patches_list "$cli_jar" "$patches_jar" "$pkg_name" 2>/dev/null) || list_patches=""
+					if [ "$list_patches" ]; then
+						inc_patches=$(toml_get "$t" included-patches) || inc_patches=""
+						exc_patches=$(toml_get "$t" excluded-patches) || exc_patches=""
+						excl_patches=$(toml_get "$t" exclusive-patches) || excl_patches=false
+						if [ "$version_mode" = "auto" ]; then
+							target_ver=$(get_patch_last_supported_ver "$list_patches" "$pkg_name" "$inc_patches" "$exc_patches" "$excl_patches" 2>/dev/null) || target_ver=""
+						fi
+					fi
+				fi
+			fi
+		fi
+
+		if [ -n "$target_ver" ]; then
+			if ! grep -q -F "${table_name}: ${target_ver}" build.md; then
+				app_updated=true
+			fi
+		fi
+
+		if [ "$patch_updated" = true ] || [ "$app_updated" = true ]; then
+			prcfg=true
+			upped+=("$table_name")
 		fi
 	done < <(toml_get_table_names)
 	if [ "$prcfg" = true ]; then
