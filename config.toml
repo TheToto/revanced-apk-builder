@@ -19,6 +19,18 @@ uptodown-dlurl = "https://youtube.en.uptodown.com/android"
 archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.youtube"
 excluded-patches = "'Custom branding'"
 
+[YouTube-Experimental]
+enabled = true
+app-name = "YouTube Experimental"
+patches-source = "MorpheApp/morphe-patches"
+cli-source = "MorpheApp/morphe-cli"
+rv-brand = "Morphe"
+build-mode = "apk"
+experimental = true
+uptodown-dlurl = "https://youtube.en.uptodown.com/android"
+archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.youtube"
+excluded-patches = "'Custom branding'"
+
 [Music]
 enabled = true
 app-name = "Music"
