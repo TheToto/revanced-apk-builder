@@ -969,6 +969,12 @@ build_rv() {
 		elif [ -n "${args[ptjar]-}" ]; then
 			patches_ver="${args[ptjar]##*-}"
 			patches_ver="${patches_ver%.jar}"
+			patches_ver="${patches_ver%.mpp}"
+			patches_ver="${patches_ver%.zip}"
+			patches_ver="${patches_ver%.apk}"
+			if [[ "$patches_ver" =~ \.[a-zA-Z]+$ ]]; then
+				patches_ver="${patches_ver%.*}"
+			fi
 			patches_ver="${patches_ver#v}"
 		fi
 
