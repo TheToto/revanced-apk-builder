@@ -1,4 +1,4 @@
-Discord: 339.11  
+Discord: 331.14  
 Music: 9.15.51  
 Reddit: 2026.14.0  
 YouTube: 21.04.223  
@@ -12,4 +12,4 @@ Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach YouTube and
 Patches: raincord/app-release.apk    
 
 Skipped:  
-Patches: hoo-dles/patches-1.39.0.mpp              
+Patches: hoo-dles/patches-1.39.0.mpp                
