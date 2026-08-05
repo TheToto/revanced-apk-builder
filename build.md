@@ -12,4 +12,4 @@ Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach YouTube and
 Patches: raincord/app-release.apk    
 
 Skipped:  
-Patches: hoo-dles/patches-1.39.0.mpp                          
+Patches: hoo-dles/patches-1.39.0.mpp                            
