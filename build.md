@@ -10,6 +10,3 @@ Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach YouTube and
 [revanced-magisk-module](https://github.com/j-hc/revanced-magisk-module)
   
 Patches: raincord/app-release.apk    
-
-Skipped:  
-Patches: hoo-dles/patches-1.39.0.mpp                            
