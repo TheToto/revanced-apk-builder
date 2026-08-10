@@ -265,6 +265,75 @@ for apk_path in apks:
         </div>
 """
 
+    # Check if a Magisk / KernelSU module ZIP exists for this app
+    module_zips = glob.glob(os.path.join(build_dir, f"{app_name_l}-{brand.lower().replace(' ', '-')}-module-*.zip"))
+    if not module_zips:
+        module_zips = glob.glob(os.path.join(build_dir, f"{slug}-*-module-*.zip"))
+    if not module_zips:
+        module_zips = glob.glob(os.path.join(build_dir, f"{slug}*module*.zip"))
+
+    module_section_html = ""
+    module_modals_html = ""
+    if module_zips:
+        module_path = module_zips[0]
+        module_filename = os.path.basename(module_path)
+        module_download_url = f"{base_url}/releases/download/{next_ver_code}/{module_filename}"
+
+        module_additional_settings = {
+            "versionExtractionRegEx": r"-module-v([0-9a-zA-Z.-]+)-(arm64-v8a|arm-v7a|x86_64|x86|all)\.zip",
+            "matchGroupToUse": "$1",
+            "isMagiskModule": True,
+            "defaultPseudoVersioningMethod": "APKLinkHash",
+            "appName": f"{app_display_name} (Magisk/KernelSU)",
+            "appAuthor": owner,
+            "about": f"{app_display_name} {brand} Magisk Module"
+        }
+
+        module_app_json = {
+            "id": f"{app_id}.module",
+            "url": page_url,
+            "author": owner,
+            "name": f"{app_display_name} (Magisk/KernelSU)",
+            "preferredApkIndex": 0,
+            "additionalSettings": json.dumps(module_additional_settings)
+        }
+        module_encoded_json = urllib.parse.quote(json.dumps(module_app_json), safe='')
+        module_obtainium_link = f"obtainium://app/{module_encoded_json}"
+
+        module_section_html = f"""
+        <div class="download-section-title">⚡ Magisk / KernelSU / APatch Module (Root)</div>
+        <div class="filename-raw">
+            File: <code>{module_filename}</code>
+        </div>
+        <div class="actions" style="max-width: 320px;">
+            <a href="{module_download_url}" class="btn btn-download-module" style="width: 100%;">Download Module (.zip)</a>
+            <button class="btn-qr" onclick="document.getElementById('qr-modal-module').classList.add('active')" title="Show Module QR Code">
+                {QR_SVG}
+            </button>
+        </div>
+        <div class="module-notice">
+            <span class="notice-icon">💡</span>
+            <span>Téléchargez le fichier <code>.zip</code> puis ouvrez <strong>KernelSU</strong> (ou Magisk / APatch) &rarr; onglet <strong>Modules</strong> &rarr; <strong>Installer le module</strong>.</span>
+        </div>
+"""
+        module_modals_html = f"""
+    <div class="modal-overlay" id="qr-modal-module" onclick="if(event.target === this) this.classList.remove('active')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="document.getElementById('qr-modal-module').classList.remove('active')">&times;</button>
+            <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to Download Magisk/KernelSU Module (.zip)</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data={urllib.parse.quote(module_download_url, safe='')}" alt="Module QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="qr-modal-obt-module" onclick="if(event.target === this) this.classList.remove('active')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="document.getElementById('qr-modal-obt-module').classList.remove('active')">&times;</button>
+            <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to add Magisk/KernelSU Module in Obtainium</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data={urllib.parse.quote(module_obtainium_link, safe='')}" alt="Obtainium Module QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
+        </div>
+    </div>
+"""
+
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -304,6 +373,7 @@ for apk_path in apks:
         
         {info_card_html}
         
+        <div class="download-section-title">📱 Standalone APK (Non-Root)</div>
         <div class="filename-raw">
             File: <code>{filename}</code>
         </div>
@@ -321,6 +391,9 @@ for apk_path in apks:
                 {QR_SVG}
             </button>
         </div>
+
+        {module_section_html}
+
         {patches_list_html}
         
         <footer>
@@ -343,6 +416,8 @@ for apk_path in apks:
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data={urllib.parse.quote(obtainium_link, safe='')}" alt="Obtainium QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
         </div>
     </div>
+
+    {module_modals_html}
 </body>
 </html>
 """
