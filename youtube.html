@@ -37,12 +37,13 @@
         
         
         
+        <div class="download-section-title">📱 Standalone APK (Non-Root)</div>
         <div class="filename-raw">
             File: <code>youtube-morphe-v21.04.223-p1.39.1-all.apk</code>
         </div>
         
         <div class="actions">
-            <a href="https://apk.thetoto.fr/releases/download/57/youtube-morphe-v21.04.223-p1.39.1-all.apk" class="btn btn-download">Download APK</a>
+            <a href="https://apk.thetoto.fr/releases/download/58/youtube-morphe-v21.04.223-p1.39.1-all.apk" class="btn btn-download">Download APK</a>
             <button class="btn-qr" onclick="document.getElementById('qr-modal-apk').classList.add('active')" title="Show APK QR Code">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <rect width="5" height="5" x="3" y="3" rx="1"/>
@@ -80,6 +81,37 @@
 </svg>
             </button>
         </div>
+
+        
+        <div class="download-section-title">⚡ Magisk / KernelSU / APatch Module (Root)</div>
+        <div class="filename-raw">
+            File: <code>youtube-morphe-module-v21.04.223-p1.39.1-all.zip</code>
+        </div>
+        <div class="actions" style="max-width: 320px;">
+            <a href="https://apk.thetoto.fr/releases/download/58/youtube-morphe-module-v21.04.223-p1.39.1-all.zip" class="btn btn-download-module" style="width: 100%;">Download Module (.zip)</a>
+            <button class="btn-qr" onclick="document.getElementById('qr-modal-module').classList.add('active')" title="Show Module QR Code">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect width="5" height="5" x="3" y="3" rx="1"/>
+    <rect width="5" height="5" x="16" y="3" rx="1"/>
+    <rect width="5" height="5" x="3" y="16" rx="1"/>
+    <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
+    <path d="M21 21v.01"/>
+    <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
+    <path d="M3 12h.01"/>
+    <path d="M12 3h.01"/>
+    <path d="M12 16v.01"/>
+    <path d="M16 12h1"/>
+    <path d="M21 12v.01"/>
+    <path d="M12 21v-1"/>
+</svg>
+            </button>
+        </div>
+        <div class="module-notice">
+            <span class="notice-icon">💡</span>
+            <span>Téléchargez le fichier <code>.zip</code> puis ouvrez <strong>KernelSU</strong> (ou Magisk / APatch) &rarr; onglet <strong>Modules</strong> &rarr; <strong>Installer le module</strong>.</span>
+        </div>
+
+
         
         <div class="patches-section">
             <h3 class="patches-title">⚙️ Applied Patches (74/79)</h3>
@@ -730,7 +762,7 @@
         <div class="modal-content">
             <button class="modal-close" onclick="document.getElementById('qr-modal-apk').classList.remove('active')">&times;</button>
             <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to Download APK</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=https%3A%2F%2Fapk.thetoto.fr%2Freleases%2Fdownload%2F57%2Fyoutube-morphe-v21.04.223-p1.39.1-all.apk" alt="APK QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=https%3A%2F%2Fapk.thetoto.fr%2Freleases%2Fdownload%2F58%2Fyoutube-morphe-v21.04.223-p1.39.1-all.apk" alt="APK QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
         </div>
     </div>
 
@@ -741,5 +773,23 @@
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2520%2522app.morphe.android.youtube%2522%252C%2520%2522url%2522%253A%2520%2522https%253A%252F%252Fapk.thetoto.fr%252Fyoutube.html%2522%252C%2520%2522author%2522%253A%2520%2522TheToto%2522%252C%2520%2522name%2522%253A%2520%2522YouTube%2522%252C%2520%2522preferredApkIndex%2522%253A%25200%252C%2520%2522additionalSettings%2522%253A%2520%2522%257B%255C%2522versionExtractionRegEx%255C%2522%253A%2520%255C%2522-v%2528%255B0-9a-zA-Z.-%255D%252B%2529-%2528arm64-v8a%257Carm-v7a%257Cx86_64%257Cx86%257Call%2529%255C%255C%255C%255C.apk%255C%2522%252C%2520%255C%2522matchGroupToUse%255C%2522%253A%2520%255C%2522%25241%255C%2522%252C%2520%255C%2522defaultPseudoVersioningMethod%255C%2522%253A%2520%255C%2522APKLinkHash%255C%2522%252C%2520%255C%2522appName%255C%2522%253A%2520%255C%2522YouTube%255C%2522%252C%2520%255C%2522appAuthor%255C%2522%253A%2520%255C%2522TheToto%255C%2522%252C%2520%255C%2522about%255C%2522%253A%2520%255C%2522YouTube%2520Morphe%255C%2522%257D%2522%257D" alt="Obtainium QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
         </div>
     </div>
+
+    
+    <div class="modal-overlay" id="qr-modal-module" onclick="if(event.target === this) this.classList.remove('active')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="document.getElementById('qr-modal-module').classList.remove('active')">&times;</button>
+            <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to Download Magisk/KernelSU Module (.zip)</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=https%3A%2F%2Fapk.thetoto.fr%2Freleases%2Fdownload%2F58%2Fyoutube-morphe-module-v21.04.223-p1.39.1-all.zip" alt="Module QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="qr-modal-obt-module" onclick="if(event.target === this) this.classList.remove('active')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="document.getElementById('qr-modal-obt-module').classList.remove('active')">&times;</button>
+            <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to add Magisk/KernelSU Module in Obtainium</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2520%2522app.morphe.android.youtube.module%2522%252C%2520%2522url%2522%253A%2520%2522https%253A%252F%252Fapk.thetoto.fr%252Fyoutube.html%2522%252C%2520%2522author%2522%253A%2520%2522TheToto%2522%252C%2520%2522name%2522%253A%2520%2522YouTube%2520%2528Magisk%252FKernelSU%2529%2522%252C%2520%2522preferredApkIndex%2522%253A%25200%252C%2520%2522additionalSettings%2522%253A%2520%2522%257B%255C%2522versionExtractionRegEx%255C%2522%253A%2520%255C%2522-module-v%2528%255B0-9a-zA-Z.-%255D%252B%2529-%2528arm64-v8a%257Carm-v7a%257Cx86_64%257Cx86%257Call%2529%255C%255C%255C%255C.zip%255C%2522%252C%2520%255C%2522matchGroupToUse%255C%2522%253A%2520%255C%2522%25241%255C%2522%252C%2520%255C%2522isMagiskModule%255C%2522%253A%2520true%252C%2520%255C%2522defaultPseudoVersioningMethod%255C%2522%253A%2520%255C%2522APKLinkHash%255C%2522%252C%2520%255C%2522appName%255C%2522%253A%2520%255C%2522YouTube%2520%2528Magisk%252FKernelSU%2529%255C%2522%252C%2520%255C%2522appAuthor%255C%2522%253A%2520%255C%2522TheToto%255C%2522%252C%2520%255C%2522about%255C%2522%253A%2520%255C%2522YouTube%2520Morphe%2520Magisk%2520Module%255C%2522%257D%2522%257D" alt="Obtainium Module QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
+        </div>
+    </div>
+
 </body>
 </html>
