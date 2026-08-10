@@ -331,37 +331,113 @@ h1 {
     box-sizing: border-box;
 }
 
-.btn-download {
-    background-color: var(--accent);
-    color: white;
+/* Download Cards & Actions */
+.download-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.75rem;
+    text-align: center;
 }
 
-.btn-download:hover {
-    background-color: #2563eb;
+.download-card.module-card {
+    background: rgba(139, 92, 246, 0.04);
+    border-color: rgba(139, 92, 246, 0.25);
+}
+
+.download-card-header {
+    margin-bottom: 1rem;
+}
+
+.card-badge {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.card-badge.apk-badge {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.card-badge.module-badge {
+    background: rgba(139, 92, 246, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.actions-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    align-items: center;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.action-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 320px;
+}
+
+.action-row > a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 52px;
+    flex: 1;
+}
+
+.btn-download,
+a.btn-download,
+a.btn-download:visited,
+a.btn-download:link {
+    background-color: var(--accent) !important;
+    color: #ffffff !important;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+}
+
+.btn-download:hover,
+a.btn-download:hover {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.btn-download-module {
-    background: linear-gradient(135deg, #8b5cf6, #6366f1);
-    color: white;
+.btn-download-module,
+a.btn-download-module,
+a.btn-download-module:visited,
+a.btn-download-module:link {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1) !important;
+    color: #ffffff !important;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+    border: none;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
-.btn-download-module:hover {
-    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+.btn-download-module:hover,
+a.btn-download-module:hover {
+    background: linear-gradient(135deg, #7c3aed, #4f46e5) !important;
+    color: #ffffff !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-}
-
-.download-section-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 1.5rem 0 0.75rem 0;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5);
 }
 
 .module-notice {
@@ -369,7 +445,7 @@ h1 {
     border: 1px solid rgba(139, 92, 246, 0.2);
     border-radius: 10px;
     padding: 0.85rem 1rem;
-    margin: 1rem auto 2rem auto;
+    margin: 1.25rem auto 0 auto;
     font-size: 0.85rem;
     color: var(--text-secondary);
     display: flex;

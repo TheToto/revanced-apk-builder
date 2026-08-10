@@ -301,19 +301,25 @@ for apk_path in apks:
         module_obtainium_link = f"obtainium://app/{module_encoded_json}"
 
         module_section_html = f"""
-        <div class="download-section-title">⚡ Magisk / KernelSU / APatch Module (Root)</div>
-        <div class="filename-raw">
-            File: <code>{module_filename}</code>
-        </div>
-        <div class="actions" style="max-width: 320px;">
-            <a href="{module_download_url}" class="btn btn-download-module" style="width: 100%;">Download Module (.zip)</a>
-            <button class="btn-qr" onclick="document.getElementById('qr-modal-module').classList.add('active')" title="Show Module QR Code">
-                {QR_SVG}
-            </button>
-        </div>
-        <div class="module-notice">
-            <span class="notice-icon">💡</span>
-            <span>Téléchargez le fichier <code>.zip</code> puis ouvrez <strong>KernelSU</strong> (ou Magisk / APatch) &rarr; onglet <strong>Modules</strong> &rarr; <strong>Installer le module</strong>.</span>
+        <div class="download-card module-card">
+            <div class="download-card-header">
+                <span class="card-badge module-badge">⚡ Magisk / KernelSU / APatch Module (Root)</span>
+            </div>
+            <div class="filename-raw">
+                File: <code>{module_filename}</code>
+            </div>
+            <div class="actions-group">
+                <div class="action-row">
+                    <a href="{module_download_url}" class="btn btn-download-module">Download Module (.zip)</a>
+                    <button class="btn-qr" onclick="document.getElementById('qr-modal-module').classList.add('active')" title="Show Module QR Code">
+                        {QR_SVG}
+                    </button>
+                </div>
+            </div>
+            <div class="module-notice">
+                <span class="notice-icon">💡</span>
+                <span>Téléchargez le fichier <code>.zip</code> puis ouvrez <strong>KernelSU</strong> (ou Magisk / APatch) &rarr; onglet <strong>Modules</strong> &rarr; <strong>Installer le module</strong>.</span>
+            </div>
         </div>
 """
         module_modals_html = f"""
@@ -322,14 +328,6 @@ for apk_path in apks:
             <button class="modal-close" onclick="document.getElementById('qr-modal-module').classList.remove('active')">&times;</button>
             <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to Download Magisk/KernelSU Module (.zip)</p>
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data={urllib.parse.quote(module_download_url, safe='')}" alt="Module QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="qr-modal-obt-module" onclick="if(event.target === this) this.classList.remove('active')">
-        <div class="modal-content">
-            <button class="modal-close" onclick="document.getElementById('qr-modal-obt-module').classList.remove('active')">&times;</button>
-            <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to add Magisk/KernelSU Module in Obtainium</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data={urllib.parse.quote(module_obtainium_link, safe='')}" alt="Obtainium Module QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
         </div>
     </div>
 """
@@ -373,23 +371,29 @@ for apk_path in apks:
         
         {info_card_html}
         
-        <div class="download-section-title">📱 Standalone APK (Non-Root)</div>
-        <div class="filename-raw">
-            File: <code>{filename}</code>
-        </div>
-        
-        <div class="actions">
-            <a href="{download_url}" class="btn btn-download">Download APK</a>
-            <button class="btn-qr" onclick="document.getElementById('qr-modal-apk').classList.add('active')" title="Show APK QR Code">
-                {QR_SVG}
-            </button>
-
-            <a href="{obtainium_link}" class="badge-obtainium">
-                <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium">
-            </a>
-            <button class="btn-qr" onclick="document.getElementById('qr-modal-obt').classList.add('active')" title="Show Obtainium QR Code">
-                {QR_SVG}
-            </button>
+        <div class="download-card apk-card">
+            <div class="download-card-header">
+                <span class="card-badge apk-badge">📱 Standalone APK (Non-Root)</span>
+            </div>
+            <div class="filename-raw">
+                File: <code>{filename}</code>
+            </div>
+            <div class="actions-group">
+                <div class="action-row">
+                    <a href="{download_url}" class="btn btn-download">Download APK</a>
+                    <button class="btn-qr" onclick="document.getElementById('qr-modal-apk').classList.add('active')" title="Show APK QR Code">
+                        {QR_SVG}
+                    </button>
+                </div>
+                <div class="action-row">
+                    <a href="{obtainium_link}" class="badge-obtainium">
+                        <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium">
+                    </a>
+                    <button class="btn-qr" onclick="document.getElementById('qr-modal-obt').classList.add('active')" title="Show Obtainium QR Code">
+                        {QR_SVG}
+                    </button>
+                </div>
+            </div>
         </div>
 
         {module_section_html}
