@@ -51,10 +51,10 @@ html_content += f"""
         <div class="tools-grid">
             <div class="obtainium-section">
                 <h2>📥 Obtainium</h2>
-                <p>Installez <strong>Obtainium</strong> pour ajouter facilement les applications et bénéficier des <strong>mises à jour automatiques</strong>.</p>
+                <p>Install <strong>Obtainium</strong> to easily add applications and get <strong>automatic updates</strong>.</p>
                 <div class="obtainium-actions">
-                    <a href="https://obtainium.imranr.dev/" class="btn-manual" target="_blank" rel="noopener">Installer Obtainium</a>
-                    <button class="btn-qr" onclick="document.getElementById('qr-modal-obtainium').classList.add('active')" title="Scanner le QR Code">
+                    <a href="https://obtainium.imranr.dev/" class="btn-manual" target="_blank" rel="noopener">Install Obtainium</a>
+                    <button class="btn-qr" onclick="document.getElementById('qr-modal-obtainium').classList.add('active')" title="Scan QR Code">
                         {QR_SVG}
                     </button>
                 </div>
@@ -62,17 +62,17 @@ html_content += f"""
 
             <div class="microg-section">
                 <h2>⚙️ MicroG RE</h2>
-                <p>Certaines applications (notamment <strong>YouTube</strong> et <strong>YouTube Music</strong>) nécessitent <strong>MicroG RE</strong> pour fonctionner sans les services Google Play officiels.</p>
+                <p>Certain apps (such as <strong>YouTube</strong> and <strong>YouTube Music</strong>) require <strong>MicroG RE</strong> for non-root standalone APKs to work without official Google Play Services.</p>
                 <div class="microg-actions">
-                    <a href="https://github.com/MorpheApp/MicroG-RE/releases" class="btn-manual" target="_blank" rel="noopener">Téléchargement manuel</a>
-                    <button class="btn-qr" onclick="document.getElementById('qr-modal-apk-microg').classList.add('active')" title="Afficher le QR Code de l'APK">
+                    <a href="https://github.com/MorpheApp/MicroG-RE/releases" class="btn-manual" target="_blank" rel="noopener">Manual Download</a>
+                    <button class="btn-qr" onclick="document.getElementById('qr-modal-apk-microg').classList.add('active')" title="Show APK QR Code">
                         {QR_SVG}
                     </button>
 
                     <a href="{microg_obtainium_link}" class="badge-obtainium">
                         <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium">
                     </a>
-                    <button class="btn-qr" onclick="document.getElementById('qr-modal-obt-microg').classList.add('active')" title="Afficher le QR Code d'Obtainium">
+                    <button class="btn-qr" onclick="document.getElementById('qr-modal-obt-microg').classList.add('active')" title="Show Obtainium QR Code">
                         {QR_SVG}
                     </button>
                 </div>
@@ -118,7 +118,7 @@ html_content += f"""        </div>
     <div class="modal-overlay" id="qr-modal-obtainium" onclick="if(event.target === this) this.classList.remove('active')">
         <div class="modal-content">
             <button class="modal-close" onclick="document.getElementById('qr-modal-obtainium').classList.remove('active')">&times;</button>
-            <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scanner pour installer Obtainium</p>
+            <p style="margin: 0 0 1.5rem 0; font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Scan to install Obtainium</p>
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=1&data={urllib.parse.quote('https://obtainium.imranr.dev/', safe='')}" alt="Obtainium Releases QR Code" style="background: white; padding: 0.5rem; border-radius: 12px; width: 280px; height: 280px;">
         </div>
     </div>

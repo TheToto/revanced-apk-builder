@@ -318,7 +318,7 @@ for apk_path in apks:
             </div>
             <div class="module-notice">
                 <span class="notice-icon">💡</span>
-                <span>Téléchargez le fichier <code>.zip</code> puis ouvrez <strong>KernelSU</strong> (ou Magisk / APatch) &rarr; onglet <strong>Modules</strong> &rarr; <strong>Installer le module</strong>.</span>
+                <span>Download the <code>.zip</code> file, then open <strong>KernelSU</strong> (or Magisk / APatch) &rarr; <strong>Modules</strong> tab &rarr; <strong>Install module</strong>. Subsequent updates will be managed <strong>automatically</strong> inside the app!</span>
             </div>
         </div>
 """
