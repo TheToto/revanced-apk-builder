@@ -1095,7 +1095,7 @@ build_rv() {
 		cp -a $MODULE_TEMPLATE_DIR/. "$base_template"
 		local upj="${table,,}-update.json"
 
-		module_config "$base_template" "$pkg_name" "$full_version_f" "$arch"
+		module_config "$base_template" "$pkg_name" "$version_f" "$arch"
 
 		module_prop \
 			"${args[module_prop_name]}" \
