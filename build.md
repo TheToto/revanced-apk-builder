@@ -9,4 +9,4 @@ Patches: raincord/app-release.apk
 
 Skipped:  
 Patches: MorpheApp/patches-1.39.1.mpp  
-Patches: hoo-dles/patches-1.40.0.mpp    
+Patches: hoo-dles/patches-1.40.0.mpp      
