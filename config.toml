@@ -121,12 +121,12 @@ uptodown-dlurl = "https://protonvpn.en.uptodown.com/android"
 arch = "arm64-v8a"
 build-mode = "apk"
 
-[Discord]
-enabled = true
-rv-brand = "Raincord"
-patch-method = "lspatch"
-patches-source = "codeberg.org/raincord/rainXposed"
-xposed-module-asset = "app-release\\.apk"
-discord-dlurl = "auto"
-arch = "arm64-v8a"
-build-mode = "apk"
+#[Discord]
+#enabled = true
+#rv-brand = "Raincord"
+#patch-method = "lspatch"
+#patches-source = "codeberg.org/raincord/rainXposed"
+#xposed-module-asset = "app-release\\.apk"
+#discord-dlurl = "auto"
+#arch = "arm64-v8a"
+#build-mode = "apk"
